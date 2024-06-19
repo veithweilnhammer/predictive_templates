@@ -1,0 +1,1289 @@
+---
+bibliography: References/library.bib
+csl: References/nature.csl
+header-includes:
+- \usepackage{setspace}\doublespacing
+- \usepackage[fontsize=12pt]{scrextend}
+- \usepackage[left]{lineno}
+- \usepackage[labelformat=empty]{caption}
+- \usepackage{longtable}
+- \usepackage{booktabs}
+always_allow_html: yes
+output:
+  word_document: default
+  html_document:
+    fig_caption: yes
+    force_captions: yes
+    highlight: pygments
+    number_sections: yes
+    theme: cerulean
+  pdf_document:
+    fig_caption: yes
+    keep_tex: yes
+    latex_engine: xelatex
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+
+##
+## Latex smallest numbers
+##
+# smallest_value = .Machine$double.xmin
+# replace p = \(0\) with p < \(\ensuremath{2.2\times 10^{-308}}\)
+
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+options(scipen = -1, digits = 2)
+
+##
+## Global settings: what to do in R markdown (compute primary statistics vs. load data from disc)
+##
+load_summary_data = TRUE
+save_summary_data = FALSE
+
+##
+#### General Markdown Settings
+##
+library(pander)
+panderOptions('round', 2)
+panderOptions('keep.trailing.zeros', TRUE)
+
+library(knitcitations)
+cleanbib()
+cite_options(citation_format = "pandoc", check.entries = FALSE)
+library(bibtex)
+```
+
+```{r libraries}
+library(lme4)
+library(afex)
+library(ppcor)
+library(optimx)
+library(sjPlot)
+library(sjlabelled)
+library(sjmisc)
+library(effects)
+library(quickpsy)
+library(pracma)
+
+library(ggplot2)
+library(ggridges)
+library(ggExtra)
+library(gridExtra)
+library(ggpubr)
+#library(kableExtra)
+
+library(tidyr)
+library(plyr)
+
+library(e1071)
+library(readxl)
+
+# red: "#E41A1C"
+# blue: "#377EB8"
+# green: "#66C2A5"
+# orange:  "#FC8D62"
+  
+# library("RColorBrewer")
+#   display.brewer.pal(n = 8, name = 'Set2')
+#   brewer.pal(n = 8, name = 'Set2')
+
+##
+## load and save routine
+##a
+# if (!load_summary_data) {
+#   if (save_summary_data) {
+#     save(X,
+#         file = "./Results/test.Rdata")
+#   }
+# } else {
+#   load("./Results/test.Rdata")
+# }
+```
+
+```{r plot_controls}
+alpha_sd = 0.35
+alpha_gd = 0.75
+dot_size_sd = 0.25
+line_size_sd = dot_size_sd/20
+dot_size_gd = 4 * dot_size_sd
+line_size_gd = 4 * dot_size_sd
+dodge_width = 0.25
+```
+
+# Title Page
+
+**Title:** Dynamic predictive templates in perception\
+
+<br/><br/>
+
+<br/><br/> **Authors**:
+
+Veith Weilnhammer$^{1}$, Yuki Murai$^{2}$, David Whitney$^{1}$\
+
+
+\
+<br/><br/> **Affiliations and Contribution**:
+
+$^{1}$ Helen Wills Neuroscience Institute, University of California Berkeley, USA\
+$^{2}$ Center for Information and Neural Networks, Osaka, Japan\
+
+\
+<br/><br/>
+
+**Corresponding Author**:
+
+Veith Weilnhammer, Helen Wills Neuroscience Institute, University of California Berkeley, USA, email: [veith.weilnhammer\@gmail.com](mailto:veith.weilnhammer@gmail.com){.email}\
+\
+<br/><br/> **Word Count**: X words (main text without methods)\
+<br/><br/> 
+
+\newpage
+\linenumbers
+
+# Summary
+
+False alarms occur when participants report a signal that was, in fact, never presented. False alarms share this feature with hallucinations, which reflect perceptual experiences that unfold in the absence of an external cause. However, to be useful as an experimental proxy for hallucinations, false alarms must meet at least two additional criteria: First, false alarms should not only represent erroneous reports of a signal, but represent perceptual states that are characterized by specific contents. Second, false alarms should occur on a timescale compatible with the temporal dynamics of hallucinations. In this work, we combined a classification image approach with Hidden Markov Models to show that false alarms can match the perceptual and temporal characteristics of hallucinations. We asked healthy human participants to discriminate difficult-to-detect visual stimuli from noise, and found that false alarms were more likely to occur during an internal mode of sensory processing, a minute-long state of the brain during which the content of perception is strongly biased toward previous experiences. Our findings suggest that hallucinations are driven by dynamic predictive templates that transform noise into transient, recurring, coherent, and meaningful perceptual experiences.
+
+# Results
+
+Hallucinations are vivid and transient experiences of objects, such as images or sounds, that occur in the absence of a corresponding stimulus[@Powers2017; @stuke_overly_2021; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022; @Horga2019; @schmack_striatal_2021]. These phenomena occur across a wide spectrum of neuropsychiatric disorders, but are particularly characteristic of schizophrenia, a severe and chronic mental health condition typically associated with repeated episodes of psychosis[@Sterzer2018; @Horga2019; @Corlett2019]. 
+
+To better understand the computational and neural mechanisms of hallucinations, cognitive neuroscience has primarily focused on experiments that induce false alarms (FA) in healthy participants[@Powers2017; @stuke_overly_2021; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022; @schmack_striatal_2021], psychosis prone individuals[@Powers2017; @kafadar_modeling_2020; @kafadar_conditioned_2022], and patients diagnosed with schizophrenia[@leptourgos_relating_2022]. FAs occur when participants make decisions about difficult-to-detect stimuli, and report the presence of a signal that was, in fact, not presented. Previous studies have shown that FA become more likely when people *expect* the presence of a stimulus. In line with this idea, FAs can be induced via cross-modal conditioning[@Powers2017; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022] or manipulations of signal probability[@schmack_striatal_2021]. A number of empirical findings indicate that FAs may provide a window into the neural mechanisms of hallucinations: FAs are more frequent in hallucination-prone individuals[@Powers2017; @stuke_overly_2021; @kafadar_modeling_2020; @kafadar_conditioned_2022; @schmack_striatal_2021] and patients diagnosed with schizophrenia[@leptourgos_relating_2022]. Moreover, they can be triggered by dopamine[@schmack_striatal_2021], an established molecular endophenotype of schizophrenia[@Howes2009], as well as by ketamine[@schmack_striatal_2021], a NMDA-receptor antagonist that elicits psychotic symptoms[@Corlett2016].
+
+However, one of the most important limitations in the current state-of-the art is that FAs are, at heart, reports. What remains to be established is whether FAs are accompanied by perceptual experiences. Even though hallucinations have varying phenomenological properties across the disorders in which they occur, and may reflect unstructured noise-like percepts in particular at early stages of psychotic illness, they are typically associated with specific perceptual contents that have meaning to the afflicted individual[@toh_phenomenology_2020; @lopez-silva_phenomenology_2022; @parnas_phenomenology_2024]. Moreover, the focus on behavioral reports has lead previous studies to investigate FAs either as isolated events that occur at individual trials of a signal detection experiment, and/or in terms of their overall frequency in relation to an experimental intervention[@Powers2017; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022; @schmack_striatal_2021], trait[@Powers2017; @stuke_overly_2021; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022; @stuke_overly_2021; @schmack_striatal_2021] or diagnosis[@leptourgos_relating_2022]. Hallucinations, by contrast, are neither momentary nor constant, but typically unfold as coherent and transient experiences over the course of seconds, minutes or hours[@oorschot_temporal_2012; @hermans_temporal_2020]. 
+
+Here, we present a novel paradigm that can help to determine whether FA share the perceptual and temporal characteristics of hallucinations. First, we use a classification image approach[@murai_serial_2021] to show that FAs cannot be reduced to behavioral reports, but occur when the external sensory input matches the features of an internal predictive template that is defined by a specific perceptual content (criterion 1). Second, we apply Hidden Markov Models[@weilnhammer_n-methyl-d-aspartate_2024] (HMMs) to show that FA, and the underlying predictive templates, are linked to recurring minute-long intervals of internal mode processing, a state of the brain during which the content of perception is strongly biased toward previous experiences (criterion 2). 
+
+## Criterion 1: The perceptual quality of FAs
+
+```{r load_data_prepare_HMM}
+
+root_dir = "./"
+
+##
+## load and prepare behavior data
+##
+Data <- read.csv(paste(root_dir, "Results/Full_Data_corrected.csv", sep = ""))
+Data[Data == "NaN"] = NA
+Data$response[Data$response == 99] = NA
+Data$previous_response[Data$previous_response == 99] = NA
+
+keep = which(!is.na(Data$response))
+Data = Data[!is.na(Data$response),]
+
+Data$previous_response[Data$previous_response == 0] = -1
+Data$previous_response[is.na(Data$previous_response) | Data$trial == 1] = 0
+
+Data$contrast[Data$contrast == 0] = -1
+Data$previous_contrast[is.na(Data$previous_contrast) | Data$trial == 1] = 0
+
+Data$previous_orientation = c(NA, Data$orientation[1:length(Data$orientation)-1])
+Data$previous_orientation[Data$trial == 1] = NA
+
+##
+## load and prepare behavior data
+##
+HMM_Data = read.csv(paste(root_dir, 'HMM/Full_HMM.csv', sep = ""))
+HMM_Data$Mode = "external"
+HMM_Data$Mode[HMM_Data$Gl_Prob_State_ext < 0.5] = "internal"
+
+##
+## join
+##
+Data$P_ext = HMM_Data$Gl_Prob_State_ext
+Data$P_int = HMM_Data$Gl_Prob_State_int
+Data$Mode = HMM_Data$Mode
+
+write.csv(Data, paste(root_dir, 'Results/prepared_Data_HMM.csv', sep = ""), row.names = FALSE)
+
+##
+## load parameters
+##
+Params = read.csv(paste(root_dir, 'HMM/two_state_init_param.csv', sep = ""))
+Params = data.frame(values = as.vector(colMeans(Params))[1:4], Type = c("Stimulus", "History", "Stimulus", "History"), Mode = c("external", "external", "internal", "internal"))
+```
+
+```{r load_HMM_data_and_preprocess}
+Data = read.csv(paste(root_dir, 'Results/prepared_Data_HMM.csv', sep = ""))
+
+Data$previous_response = (Data$previous_response + 1)/2
+Data$previous_response[Data$previous_response == 0.5] = NA
+
+Data$contrast[Data$contrast == 2] = "high"
+Data$contrast[Data$contrast == "1"] = "low"
+Data$contrast[Data$contrast == "-1"] = "0"
+Data$contrast = factor(Data$contrast, levels = c("0", "low", "high"), ordered = TRUE)
+
+Data$previous_contrast[Data$previous_contrast == 2] = "high"
+Data$previous_contrast[Data$previous_contrast == "1"] = "low"
+Data$previous_contrast[Data$trial == 1] = NA
+Data$previous_contrast = factor(Data$previous_contrast, levels = c("0", "low", "high"), ordered = TRUE)
+
+Data$correct = 0
+Data[Data$response == 0 & Data$contrast == "0",]$correct = 1
+Data[Data$response == 1 & Data$contrast != "0",]$correct = 1
+
+Data$direction = Data$orientation
+Data$direction[Data$direction < 0] = -99
+Data$direction[Data$direction > 0] = +99
+Data$direction[Data$direction == 99] = "CW"
+Data$direction[Data$direction == -99] = "CCW"
+
+Data$direction = Data$orientation
+Data$direction[Data$direction < 0] = -99
+Data$direction[Data$direction > 0] = +99
+Data$direction[Data$direction == 99] = "CW"
+Data$direction[Data$direction == -99] = "CCW"
+
+Data$previous_direction = c(NA, Data$direction[1:length(Data$direction)-1])
+Data$previous_direction[Data$trial == 1] = NA
+
+signal_columns = colnames(Data)[28:48]
+all_columns = colnames(Data)[8:68]
+Data$template = scale(rowSums(Data[,signal_columns])/rowSums(Data[,all_columns]))
+
+
+# subset_df = Data[,all_columns]
+# orientations <- seq(0, 180, by=3) * (pi / 180)
+# angles = seq(0, 180, by=3)
+# # Compute x and y components of each vector
+# x_components <- sweep(subset_df, 2, cos(angles), `*`)
+# y_components <- sweep(subset_df, 2, sin(angles), `*`)
+# 
+# # Sum the components for each row
+# x_sum <- rowSums(x_components)
+# y_sum <- rowSums(y_components)
+# 
+# # Compute the magnitude and direction of the resultant vector
+# Data$magnitude <- sqrt(x_sum^2 + y_sum^2)
+# Data$direction <- atan2(y_sum, x_sum) * (180 / pi)  # Convert back to degrees if needed
+```
+
+```{r alarm_rate}
+
+##
+## STATS: Integration of prior and likelihood
+##
+if (!load_summary_data) {
+
+alarm_resp_contr = glmer(response ~ contrast + previous_contrast + template + (1 | ID), data = Data, family = binomial(link = logit))
+STAT.alarm_resp_contr = summary(alarm_resp_contr)
+
+alarm_resp_contr_external = glmer(response ~ contrast + previous_contrast + template + (1 | ID), data = Data[Data$Mode == "external",], family = binomial(link = logit))
+STAT.alarm_resp_contr_external = summary(alarm_resp_contr_external)
+
+alarm_resp_contr_internal = glmer(response ~ contrast + previous_contrast + template + (1 | ID), data = Data[Data$Mode == "internal",], family = binomial(link = logit))
+STAT.alarm_resp_contr_internal = summary(alarm_resp_contr_internal)
+
+full_alarm_resp_contr = glmer(response ~ contrast*Mode + previous_contrast*Mode + template*Mode + (1 | ID), data = Data, family = binomial(link = logit))
+STAT.full_alarm_resp_contr = summary(full_alarm_resp_contr)
+
+  if (save_summary_data) {
+    save(STAT.alarm_resp_contr,
+         STAT.alarm_resp_contr_external,
+         STAT.alarm_resp_contr_internal,
+         STAT.full_alarm_resp_contr,
+         file = "./Results/alarm_rate_stats.Rdata")
+  }
+} else {
+  load("./Results/alarm_rate_stats.Rdata")
+}
+
+Group_Data_ID <-
+    ddply(
+      Data[!is.na(Data$previous_contrast),],
+      .(contrast, previous_contrast, ID),
+      summarise,
+      average_alarm = mean(response, na.rm = TRUE)
+    )
+Group_Data_ID$Mode = "global"
+
+Group_Data_ID_Mode <-
+    ddply(
+      Data[!is.na(Data$previous_contrast),],
+      .(contrast, previous_contrast, ID, Mode),
+      summarise,
+      average_alarm = mean(response, na.rm = TRUE)
+    )
+Group_Data_ID = rbind(Group_Data_ID, Group_Data_ID_Mode)
+
+Group_Data <-
+    ddply(
+      Group_Data_ID,
+      .(contrast, previous_contrast, Mode),
+      summarise,
+      mean = mean(average_alarm, na.rm = TRUE),
+      error = sd(average_alarm, na.rm = TRUE)/sqrt(length(average_alarm))
+    )
+
+mode_FA = lmer(average_alarm ~ Mode + (1 | ID), data = Group_Data_ID_Mode[Group_Data_ID_Mode$contrast == "0" & Group_Data_ID_Mode$Mode != "global",])
+STAT.mode_FA = summary(mode_FA)
+
+```
+
+According to Bayes theorem, alarms ($P(signal|input)$) become likely when people expect to see a signal ($P(signal)$, prior), and when the features of a noisy input are compatible with the expected signal ($P(input|signal)$, likelihood). In natural environments, where the recent past is a predictor of the near future, previous stimuli may induce expectations about what is likely to be perceived next[@weilnhammer_bistable_2021; @weilnhammer_sensory_2023]. This generate predictive templates[@manassi_continuity_2024] that integrate experiences over time[@manassi_continuity_2024] ($P(signal|input) = P(signal) \times P(input|signal)$), giving rise to the phenomenon of perceptual serial dependence[@fischer_serial_2014; @kiyonaga_serial_2017; @pascucci_serial_2023; @cicchini_serial_2024; @manassi_serial_2023].
+
+Predictive templates may improve the interpretation of noisy but predictable sensory inputs[@cicchini_functional_2018; @manassi_continuity_2024] ($P(signal|input) = P(signal) \times P(input|signal)$). When overly strong, however, predictive templates lose their adaptive function and may cause people to experience spurious signals in noise ($P(signal|noise)$). With respect to the study of hallucinations, the critical question is whether FAs are driven solely by signal expectations ($P(signal)$, prior), in which case they may just be behavioral responses without any perceptual quality, or if they also depend on the compatibility of the noise with the expected signal ($P(noise|signal)$, likelihood). The latter case would indicate that FAs are accompanied by perceptual experiences with a specific content. 
+
+To test the contribution of prior and likelihood to FAs, we analyzed data from `r length(unique(Data$ID))` participants who judged whether close-to vertical gratings (targets) were present (alarms) or absent (rejections) in white noise image (Figure 1A). The alarm rate depended on three factors: the contrast of the target at the current trial ($`r STAT.alarm_resp_contr$coefficients[2,1]`$ ± $`r STAT.alarm_resp_contr$coefficients[2,2]`$, z = $`r STAT.alarm_resp_contr$coefficients[2,3]`$, p = $`r STAT.alarm_resp_contr$coefficients[2,4]`$), the contrast of the target at the preceding trial ($`r STAT.alarm_resp_contr$coefficients[4,1]`$ ± $`r STAT.alarm_resp_contr$coefficients[4,2]`$, z = $`r STAT.alarm_resp_contr$coefficients[4,3]`$, p = $`r STAT.alarm_resp_contr$coefficients[4,4]`$, Figure 2), and the relative power of the current noise image at close-to-vertical orientations (60 to 120 degrees), relative to the total power over all orientations ($`r STAT.alarm_resp_contr$coefficients[6,1]`$ ± $`r STAT.alarm_resp_contr$coefficients[6,2]`$, z = $`r STAT.alarm_resp_contr$coefficients[6,3]`$, p = $`r STAT.alarm_resp_contr$coefficients[6,4]`$, Figure 1B).
+
+```{r classification_images}
+##
+## Signal detection variables
+##
+Data$FalseAlarm = 0
+Data[Data$response == 1 & Data$contrast == "0",]$FalseAlarm = 1
+
+Data$Miss= 0
+Data[Data$response == 0 & Data$contrast != "0",]$Miss = 1
+
+Data$Hit = 0
+Data[Data$response == 1 & Data$contrast != "0",]$Hit = 1
+
+Data$CorrectRejection = 0
+Data[Data$response == 0  & Data$contrast == "0",]$CorrectRejection = 1
+
+
+
+##
+## STATS: templates versus FAs
+##
+template_alarm = lmer(template ~ response + (1 | ID), data = Data)
+STAT.template_alarm = summary(template_alarm)
+
+
+gathercol <- colnames(Data[,c(8:68)])
+Data_long <- gather(Data, "Orientation", "Power", gathercol, factor_key = TRUE)
+
+Data_long$Orientation = as.numeric(gsub("X", "", Data_long$Orientation))
+
+Summary_Data_long_ID <-
+    ddply( 
+      Data_long[Data_long$previous_contrast == "high" & !is.na(Data_long$previous_direction),],
+      .(Orientation, previous_direction, ID),
+      summarise,
+      alarm_minus_rejection = mean(Power[response == 1], na.rm = TRUE) - mean(Power[response == 0], na.rm = TRUE))
+Summary_Data_long_ID$Mode = "global"
+
+Summary_Data_long_ID_Mode <-
+    ddply( 
+      Data_long[Data_long$previous_contrast == "high" & !is.na(Data_long$previous_direction),],
+      .(Orientation, previous_direction, ID, Mode),
+      summarise,
+      alarm_minus_rejection = mean(Power[response == 1], na.rm = TRUE) - mean(Power[response == 0], na.rm = TRUE))
+
+Summary_Data_long_ID = rbind(Summary_Data_long_ID, Summary_Data_long_ID_Mode)
+
+Group_Data_long <-
+    ddply( 
+      Summary_Data_long_ID,
+      .(Orientation, previous_direction, Mode),
+      summarise,
+      mean = mean(alarm_minus_rejection, na.rm = TRUE),
+      error = sd(alarm_minus_rejection, na.rm = TRUE)/sqrt(length(alarm_minus_rejection)))
+
+# Calculate the mean vector for each condition
+calculate_mean_vector <- function(data) {
+    if (!"Orientation" %in% colnames(data)) {
+    data$Orientation <- data$orientation
+  }
+  orientations <- data$Orientation * pi / 180
+  orientations <- data$Orientation * pi / 180
+  Power = data$mean
+  Power[Power <= 0] = NA
+  x_coords <- Power * cos(orientations)
+  y_coords <- Power * sin(orientations)
+  
+  mean_x <- mean(x_coords, na.rm = TRUE)
+  mean_y <- mean(y_coords, na.rm = TRUE)
+  
+  mean_orientation <- atan2(mean_y, mean_x) * 180 / pi
+  mean_magnitude <- sqrt(mean_x^2 + mean_y^2)
+  
+  return(data.frame(mean_orientation, mean_magnitude))
+}
+mean_vectors <- Group_Data_long[Group_Data_long$Orientation > 30 & Group_Data_long$Orientation < 150,] %>%
+  group_by(previous_direction, Mode) %>%
+  do(calculate_mean_vector(.))
+
+Group_Data_long <- merge(Group_Data_long, mean_vectors, by = c("previous_direction", "Mode"))
+
+# Calculate the mean vector for each condition
+calculate_mean_vector_ID <- function(data) {
+    if (!"Orientation" %in% colnames(data)) {
+    data$Orientation <- data$orientation
+  }
+  orientations <- data$Orientation * pi / 180
+  orientations <- data$Orientation * pi / 180
+  Power = data$alarm_minus_rejection
+  Power[Power <= 0] = NA
+  x_coords <- Power * cos(orientations)
+  y_coords <- Power * sin(orientations)
+  
+  mean_x <- mean(x_coords, na.rm = TRUE)
+  mean_y <- mean(y_coords, na.rm = TRUE)
+  
+  mean_orientation <- atan2(mean_y, mean_x) * 180 / pi
+  mean_magnitude <- sqrt(mean_x^2 + mean_y^2)
+  
+  return(data.frame(mean_orientation, mean_magnitude))
+}
+
+mean_vectors_ID <- Summary_Data_long_ID[Summary_Data_long_ID$Orientation > 30 & Summary_Data_long_ID$Orientation < 150,] %>%
+  group_by(previous_direction, Mode, ID) %>%
+  do(calculate_mean_vector_ID(.))
+
+STAT.vector_internal = summary(lmer(mean_orientation ~ previous_direction + (1 | ID), data = mean_vectors_ID[mean_vectors_ID$Mode == "internal",]))
+STAT.vector_external = summary(lmer(mean_orientation ~ previous_direction + (1 | ID), data = mean_vectors_ID[mean_vectors_ID$Mode == "external",]))
+STAT.vector_global = summary(lmer(mean_orientation ~ previous_direction + (1 | ID), data = mean_vectors_ID[mean_vectors_ID$Mode == "global",]))
+```
+
+This confirms that FAs were driven by predictive templates: FAs were more likely when the stimulus presented at the preceding trial induced a strong signal expectation ($P(signal)$), and when the sensory noise at the current trial matched the features of the expected signal ($P(noise|signal)$). To visualize these predictive templates, we subtracted the noise power at rejection trials from the noise power at alarm trials (Figure 3). The resulting classification images[@murai_serial_2021] revealed a noise power peak at close-to-vertical-orientations ($`r STAT.mode_FA$coefficients[2,1]`$ ± $`r STAT.mode_FA$coefficients[2,2]`$, T($`r STAT.template_alarm$coefficients[2,3]`$) = $`r STAT.template_alarm$coefficients[2,4]`$, p = $`r STAT.template_alarm$coefficients[2,5]`$) that matched the average orientation of the signals. If FA were simply lapses or biases in response behavior, one would expect a flat classification image that mirrors the overall flat power-by-orientation distribution in the white noise stimuli used in our experiment. This was clearly not the case: FAs occurred more frequently at noise stimuli that matched a feature of the signal (high power at close-to-vertical orientations). Critically, observers learned the features fo the average signal from the sequence of experiences throughout the experiment. 
+
+Our findings therefore support criterion 1: at the time of FAs, observers perceived a specific content - in this case, gratings with a close-to-vertical orientation. The hallucinated content was determined by predictive templates that are generated by the sequence of preceding experiences[@fischer_serial_2014; @kiyonaga_serial_2017;@pascucci_serial_2023; @cicchini_serial_2024; @manassi_serial_2023; @manassi_continuity_2024] ($P(signal|noise) = P(signal) \times P(noise|signal)$).
+
+```{r general_mode}
+##
+## Prevalence of Mode
+##
+
+Summary_Data_Mode_Prevalence_ID <-
+    ddply(
+      Data,
+      .(ID),
+      summarise,
+      P_int = 100 * sum(Mode == "internal", na.rm = TRUE)/length(Mode)
+    )
+
+Summary_Data_Mode_Prevalence_ID$P_ext = 100 - Summary_Data_Mode_Prevalence_ID$P_int
+gathercol <- colnames(Summary_Data_Mode_Prevalence_ID[,c(2:3)])
+Summary_Data_Mode_Prevalence_ID_long <- gather(Summary_Data_Mode_Prevalence_ID, "Mode", "Probability", gathercol, factor_key = TRUE)
+Summary_Data_Mode_Prevalence_ID_long$Mode = gsub("P_ext", "external", Summary_Data_Mode_Prevalence_ID_long$Mode)
+Summary_Data_Mode_Prevalence_ID_long$Mode = gsub("P_int", "internal", Summary_Data_Mode_Prevalence_ID_long$Mode)
+
+Group_Summary_Data_Mode_Prevalence_ID_long <-
+ddply(
+      Summary_Data_Mode_Prevalence_ID_long,
+      .(Mode),
+      summarise,
+      mean = mean(Probability, na.rm = TRUE),
+      error = sd(Probability, na.rm = TRUE)/sqrt(length(Probability)))
+
+Summary_Data_Mode_versus_contrast <-
+    ddply(
+      Data,
+      .(contrast, ID),
+      summarise,
+      average_P_ext = 100 * sum(Mode == "external", na.rm = TRUE)/length(Mode)
+    )
+
+Group_Data_Mode_versus_contrast <-
+    ddply(
+      Summary_Data_Mode_versus_contrast,
+      .(contrast),
+      summarise,
+      mean = mean(average_P_ext, na.rm = TRUE),
+      error = sd(average_P_ext, na.rm = TRUE)/sqrt(length(average_P_ext))
+    )
+
+p_Mode_versus_contrast <-ggplot(data = Group_Data_Mode_versus_contrast,
+  aes(
+  x = contrast,
+  y = mean,
+  ymax = mean + error, 
+  ymin = mean - error)) +
+  geom_errorbar(
+   width = dodge_width,
+   position = position_dodge(width = dodge_width*2),
+  size = line_size_gd,
+  alpha = alpha_gd
+  ) + 
+  theme_classic(base_size = 6) + labs(
+  x = "Contrast",
+  y = "Probability of external mode",
+  subtitle = "D"
+  ) + scale_color_brewer(palette = "Set1", direction = -1) + scale_fill_brewer(palette = "Set1", direction = -1) + theme(legend.position = "top") +
+  theme(panel.spacing=unit(1,"lines")) + ylim(50, 100)
+
+##
+## Intervals between modes
+##
+
+# Ensure the Mode column is a factor
+Data$Mode <- factor(Data$Mode, levels = c("external", "internal"))
+
+# Function to calculate the average interval between mode changes for a given participant
+calculate_intervals <- function(data) {
+  # Ensure that data is ordered by trial or time
+  data <- data[order(data$trial), ]
+  # Convert Mode to numeric
+  mode_numeric <- as.numeric(data$Mode)
+  # Identify the positions where the mode changes
+  changes <- which(diff(mode_numeric) != 0)
+  # Calculate intervals between changes
+  intervals <- diff(changes)
+  if (length(intervals) == 0) {
+    return(NA)  # Return NA if there are no changes
+  } else {
+    return(mean(intervals))
+  }
+}
+
+
+split_data <- split(Data, Data$ID)
+average_intervals <- sapply(split_data, calculate_intervals)
+average_intervals_df <- data.frame(ID = names(average_intervals), interval = average_intervals)
+
+mode_resp_contr = glmer(round(P_ext) ~ previous_contrast + template + (1 | ID), data = Data[Data$contrast != "high",], family = binomial(link = logit))
+STAT.mode_resp_contr = summary(mode_resp_contr)
+
+df_BIC <- read.csv("./HMM/BIC_across_models.csv")
+df_BIC_permuted <- read.csv("./HMM/BIC_permuted_across_models.csv")
+
+df_BIC$perm_idx = 0
+df_BIC$type = "original"
+
+colnames(df_BIC_permuted) <- c("perm_idx", "num_states", "BIC")
+df_BIC_permuted$type = "permuted"
+
+df_combined <- bind_rows(df_BIC, df_BIC_permuted)
+
+Group_BIC <-
+  ddply(
+    df_combined,
+    .(num_states, type),
+    summarise,
+    mean = mean(BIC, na.rm = TRUE),
+    error = sd(BIC, na.rm = TRUE) / sqrt(length(BIC)))
+```
+
+## Criterion 2: The temporal dynamics of predictive templates
+
+Hallucinations are transient, coherent, an often meaningful experiences that unfold over time. A valid experimental proxy for hallucinations should therefore fluctuate at a timescale compatible with the duration of hallucinatory experiences. In the case of FAs, this means that the underlying predictive templates should be dynamic, and generate recurrent and transient intervals during which perception is strongly biased toward previous experiences. 
+
+To assess the temporal dynamics of the predictive templates, we estimated HMMs that inferred transitions between two latent states, each state linked to a logistic regression model that predicted trial-wises responses $y_t$ (alarms versus rejections) from the signal contrast at the current trial ($\beta_s \times s_t$) and the response at the preceding trial ($\beta_H \times y_t$, Figure 1C). In line with previous results[@weilnhammer_sensory_2023; @weilnhammer_n-methyl-d-aspartate_2024], the HMMs revealed slow alternations between an external mode, where perception closely followed external stimulus ($\beta_S > \beta_H$), and an internal mode, where perception was strongly biased by preceding experiences ($\beta_H$ \> $\beta_S$). 
+
+Bayesian model comparison indicated that the two-state GLM provided a more parsimonious description of the data than the one-state control model (reduction in BIC: $\delta_{BIC}$ =  $`r Group_BIC[Group_BIC$num_states == 2 & Group_BIC$type == "original",]$mean - Group_BIC[Group_BIC$num_states == 1 & Group_BIC$type == "original",]$mean`$; see Supplemental Figure SX1 for control analyses on randomly permuted data, for which the advantage of the two-state GLM was lost).
+
+Participants spent $`r mean(Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE)`$ ±  $`r (sd(Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE))/sqrt(length(Summary_Data_Mode_Prevalence_ID$P_int))`$%  of their time in internal mode, with alternation between modes occurring in intervals of  $`r mean(average_intervals_df$interval, na.rm = TRUE)`$ ± $`r (sd(average_intervals_df$interval, na.rm = TRUE))/sqrt(length(average_intervals_df$interval))`$ trials, corresponding to $`r 2*mean(average_intervals_df$interval, na.rm = TRUE)`$ ±  $`r 2*(sd(average_intervals_df$interval, na.rm = TRUE))/sqrt(length(average_intervals_df$interval))`$ sec. The logistic regression models that defined the external and internal mode were independent from the type of the response (alarm versus rejection), the signal orientations, and the power-by-orientation distribution of individual noise stimuli. Any between-mode difference in the FA rate and the associated classification images was therefore indicative of dynamic changes in the underlying predictive templates.
+
+We found that the internal mode increased the rate of FAs relative to external mode ($`r STAT.mode_FA$coefficients[2,1]`$ ± $`r STAT.mode_FA$coefficients[2,2]`$, T($`r STAT.mode_FA$coefficients[2,3]`$) = $`r STAT.mode_FA$coefficients[2,4]`$, p = $`r STAT.mode_FA$coefficients[2,5]`$, Figure 2). 
+In the internal mode, perception depended more on the contrast of the stimulus presented at the preceding trial  ($`r STAT.full_alarm_resp_contr$coefficients[10,1]`$ ± $`r STAT.full_alarm_resp_contr$coefficients[10,2]`$, z = $`r STAT.full_alarm_resp_contr$coefficients[10,3]`$, p = $`r STAT.full_alarm_resp_contr$coefficients[10,4]`$) and less on contrast of the stimulus presented at the current trial ($`r STAT.full_alarm_resp_contr$coefficients[8,1]`$ ± $`r STAT.full_alarm_resp_contr$coefficients[8,2]`$, z = $`r STAT.full_alarm_resp_contr$coefficients[8,3]`$, p = $`r STAT.full_alarm_resp_contr$coefficients[8,4]`$). The effect of signal expectations ($P(signal)$) on perception were thus exaggerated during the internal mode.
+
+Alarms during the internal mode were associated with a close-to-vertical noise-power-peak that was shifted toward the orientation of the stimulus presented at the preceding trial ($`r STAT.vector_internal$coefficients[2,1]`$ ± $`r STAT.vector_internal$coefficients[2,2]`$, T($`r STAT.vector_internal$coefficients[2,3]`$) = $`r STAT.vector_internal$coefficients[2,4]`$, p = $`r STAT.vector_internal$coefficients[2,5]`$, Figure 3). 
+This shift was not observed during the external mode ($`r STAT.vector_external$coefficients[2,1]`$ ± $`r STAT.vector_external$coefficients[2,2]`$, T($`r STAT.vector_external$coefficients[2,3]`$) = $`r STAT.vector_external$coefficients[2,4]`$, p = $`r STAT.vector_external$coefficients[2,5]`$). This suggests that the predictive templates, and the associated bias in the content of perception toward previous experiences, was particularly strong during the internal mode.
+
+Our findings therefore confirmed criterion 2: the predictive templates that drive FAs are dynamic and fluctuate according to two opposing external and internal modes of perception. Alternations between modes occurred at the order of minutes, and were thus compatible with temporal duration of hallucinations. During the internal mode, FAs were associated with hallucinated contents that were skewed toward previous experiences. 
+
+# Discussion
+
+In sum, our results indicate that the FAs observed in our study are perceptual phenomena, characterized by specific contents, and driven by dynamic predictive templates that fluctuate in intervals of several minutes. This confirms that FAs induced by signal-detection experiments can match the perceptual[@toh_phenomenology_2020; @toh_phenomenology_2020; @lopez-silva_phenomenology_2022; @parnas_phenomenology_2024] and temporal[@oorschot_temporal_2012; @hermans_temporal_2020] quality of hallucinations. 
+
+Our results indicate that FAs, and potentially hallucinations, are linked to alternations between external and internal modes of perception. External and internal modes have repeatedly been observed in mice[@ashwood_mice_2022; @weilnhammer_sensory_2023], healthy human participants[@weilnhammer_sensory_2023], and patients diagnosed with schizophrenia[@weilnhammer_n-methyl-d-aspartate_2024]. We found that the internal mode did not only increase the rate of FAs, but also the extent to which the content perceived at the time of FAs was skewed toward previous experiences. This finding points to a tentative mechanism for how hallucinations emerge, persist, and end: During the internal mode, a hallucination may emerge as a FA that occurs when a specific context induces signal expectations (e.g., hearing the neighbors voice in one's apartment, $P(signal)$) which coincide with a sensory input that is compatible with the average features of the expected signal (e.g., construction noise that matches the features of human speech, $P(input|signal)$). The internal mode enhances the effect of preceding experiences on perception and may allow a specific hallucinated content to persist over time as a coherent experience. A transition from internal to external mode greatly reduces the strength of the predictive template in which the hallucination unfolds, ultimately causing the end of the experience. Future research could test this hypothesis by testing whether FAs, and ultimately hallucinations experienced by people living with psychotic symptoms, can be mitigated by interventions that disrupt the internal mode.
+
+During the internal mode, the average of the classification vectors were displaced by $`r mean(abs(mean_vectors_ID[mean_vectors_ID$Mode == "internal",]$mean_orientation - 90), na.rm = TRUE)`$ ± $`r sd(abs(mean_vectors_ID[mean_vectors_ID$Mode == "internal",]$mean_orientation - 90), na.rm = TRUE)/sqrt(length(mean_vectors_ID[mean_vectors_ID$Mode == "internal",]$mean_orientation)/2) degrees from vertical (Figure 3). The direction of the vectors depended on the predictive template, i.e., orientation of the stimulus presented at the preceding trial. Interestingly, the displacement of the classification vectors from vertical was larger than the orientation of the high-contrast gratings (-10 and 10 degrees from vertical, Figure 1A), which were most effective at inducing FAs during the internal mode (Figure 2). Since the high-contrast gratings stood out from the stimulus both in terms of contrast and orientation (low contrast gratings were presented at orientation ranging from -3 to 3, Figure 1A-B), one may suspect that the perceived orientation of the high-contrast grating exceeded their veridical orientation. An alternative explanation may be that FAs experiences exaggerated the features of the inducer, just as hallucinations often portray exaggerated version of everyday stimuli (such as hallucinated speech that stands out in terms of tone, pitch, or extreme contents).
+
+Our findings suggests a key role of serial dependence[@fischer_serial_2014; @kiyonaga_serial_2017;@pascucci_serial_2023; @cicchini_serial_2024] and predictive templates[@manassi_serial_2023] for how hallucinations emerge and persist over time. They overlap with the so-called strong prior account of schizophrenia[@Corlett2019], where psychotic symptoms, and in particular hallucinations, are thought to occur due to an exaggerated effect of prior knowledge on perception[@Powers2017; @stuke_overly_2021; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022; @schmack_striatal_2021]. At the same time, they seem at odds with the observation that serial dependencies are reduced in psychosis prone individuals[@eckert_cross-modality_2023] and patients diagnosed with schizophrenia[@Stein2020] (the weak prior account of schizophrenia[@Sterzer2018]). So far, attempts to reconcile these disparate set of findings have argued that priors may be either weak or strong depending on the stage of psychotic illness[@Sterzer2018, @Corlett2019] (weak priors in early stages, and strong priors in later stages) or the cognitive hierarchy[@Sterzer2018, @Corlett2019] (weak priors at the perceptual level, and strong priors at the cognitive level).
+
+The fact that FAs, and potentially psychotic symptoms such as hallucinations, are tied to recurrent alternation between external and internal modes of perception may provide an alternative explanation for the apparent discrepancy between strong and weak priors: Psychosis prone individuals and patients diagnosed with schizophrenia may share general propensity toward the external mode, which reduces the effects of priors on perception[@Stein2020, @eckert_cross-modality_2023] and drives erratic responses to ambiguous sensory information[@weilnhammer_n-methyl-d-aspartate_2024]. During the internal mode, psychosis prone individuals and patients diagnosed with schizophrenia may have stronger predictive templates that triggers and shapes the content of hallucinations. The combination of classification images and HMMs provides a novel analytical framework to test this hypothesis, may help to advance our theoretical understanding of schizophrenia, and can pave the way towards innovations in mental health that benefit people living with psychotic symptoms. 
+
+\newpage
+
+# Methods
+
+## Lead contact
+
+Further information and requests for resources should be directed to and will be fulfilled by the lead contact, Veith Weilnhammer (veith.weilnhammer@gmail.com).
+
+## Materials availability
+
+This study did not generate new unique reagents.
+
+## Data and code availability
+
+All custom code and behavioral data are available on <https://github.com/veithweilnhammer/Modes>. This manuscript was created using the *R Markdown* framework, which integrates all data-related computations and the formatted text within one document. With this, we wish to make our approach fully transparent and reproducible for reviewers and future readers.
+
+## Experimental model and subject details
+
+#### Apparatus
+
+The participants viewed visual stimuli on a gamma-corrected CRT monitor (Sony Trinitron Multiscan G520, 1024x768 pixels, 100 Hz refresh rate, Konica Minolta LS-110 luminometer for gamma correction) at a viewing distance of 57.3 cm, with head stabilization provided by a chin rest.
+
+### Stimuli and Procedure
+
+All stimuli were presented using MATLAB (MathWorks, R2017a) and the Psychophysics Toolbox. In 44% of the trials, we presented low-contrast near-to-vertical Gabor patches which were embedded in static white noise. In another 44% of the trials, we presented only static white noise. The remaining 12% of the trials featured a high-contrast Gabor patch (40% Michelson contrast) embedded in white noise. This high-contrast inducer was introduce to boost the phenomenon of serial dependency. The inducers were oriented 10 degrees clockwise or counterclockwise relative to vertical, and presented in intervals randomized between 4 and 10 trials. Stimuli were displayed for 500 ms, with a maximum white noise contrast of 60%. To reduce potential luminance aftereffects, the target was masked by low-pass filtered luminance contrast noise (100% contrast) for 500 ms, and the Gabor phase was randomized across trials. Visual stimuli measured 14 x 14 degrees of visual angle (d.v.a.), with Gabor patches confined to a Gaussian contrast envelope with a 3 d.v.a. standard deviation. The spatial frequency of the Gabor patches was 0.5 cycles per degree (cpd), with orientation randomized within ±3 degrees relative to vertical for low-contrast gratings. High-contrast gratings were presented at ±10 degrees. Participants were tasked to judge the presence or absence of the near-vertical target Gabor in the noisy image. We adjusted the signal contrast on a participant-by-participant basis to achieve a d’ of approximately 1.5 using data from preliminary experiments. Each session consisted of 100 trials, with inter-trial intervals randomized between 800-1200 ms. Participants completed 15-25 sessions in about 2 hours.
+
+### Quantification and Statistical Analysis
+
+Responses were categorized into one of four stimulus-response types: Hits (alarms on stimulus trials), correct rejections (rejections on no-stimulus trials), FAs (alarms on no-stimulus trials), and misses (rejections on stimulus trials). We employed standard logistic and linear regression using R-packages lmer, glmer, and afex (see Supplemental Table S1).
+
+#### Classification images
+
+Following previous approaches[@murai_serial_2021], we filtered each static white noise image with the Gaussian stimulus envelope, applied fast 2-D Fourier-transformation, and extracted the power at the Gabor patch’s spatial frequency, separately for orientations from 0 to 180 degrees in three degree intervals. For every image, we computed the average power between 60 to 120 degrees, relative to the overall power from complete orientation range. To visualize the classification images, we subtracted the average power-by-orientation at rejection trials from the average power-by-orientation at alarm trials. To examine serial dependence, the same analysis was conducted separately for trials following clockwise (CW) and counter-clockwise (CCW) inducers. In each condition and participant, we determined the average vector of the classification image by computing the centroid of a polygon composed of vector endpoints in polar coordinates.
+
+#### Hidden Markov Modeling
+
+We used General Linear Models (GLM) to predict the response $y_t$ (0: rejection: 1: alarm) from the contrast at the current trial ($s_t$: zero contrast, low contrast, high contrast) and the response at the preceding trial $y_{t-1}$:
+
+\begin{equation}
+P(y_t = 1 | x_t) = \frac{1}{1 + e^{-x_t \times w}} 
+\end{equation}
+
+\begin{equation}
+x_t \times w =  s_t \times \beta_s + y_{t-1} \times \beta_H
+\end{equation}
+
+We then used Hidden Markov Models (HMMs, as implemented in the *SSM: Bayesian learning and inference for state space models* python library, https://github.com/lindermanlab/ssm) to model transitions between two latent states  $k$ and $j$. At each trial, the HMM predicted the latent state $z_t$ was $k$ or $j$, with alternation between $k$ and $j$ that were governed by a 2 x 2 transition matrix $A$:
+
+Each latent state was linked to an independent GLM that predicted $y_t$ from $s_t$ and $y_{t-1}$ based on the weights $w_{j/k}$:
+
+\begin{equation}
+P(y_t = 1 | x_t, z_t) = \frac{1}{1 + e^{-x_t \times w_{k/j}}} 
+\end{equation}
+
+\begin{equation}
+x_t \times w_{k/j} =  s_t \times \beta_{s,k/j} + y_{t-1} \times \beta_{p,k/j} 
+\end{equation}
+
+For both states, parameters were initialized at the regression weights of a one-state control GLM. To compare the performance of the two-state GLM relative to the one-state control GLM, we computed the difference in Bayesian Information Criterion (BIC) between the two models. The SSM hyperparameters were defined as follows: $\sigma^2$ = 10 (variance over the GLM weights $w_{k/j}$, and $\alpha$ = 1 (Dirichlet prior over the transition matrix $A$) was set to 1. The latent states $k$ and $j$ were linked to mode by comparing $\beta_s$ and $\beta_H$ (external mode: $\beta_s$ > $\beta_H$, internal mode: $\beta_H$ > $\beta_s$). We labelled trial as external when $P(z_t = external) = 1 - P(z_t = internal) > 0.5$.
+
+\newpage
+
+# Figures
+
+## Figure 1
+
+```{r Figure_1}
+p_main_accuracy_global <- ggplot() + 
+  geom_point(data = Group_Data_ID[Group_Data_ID$Mode == "global",],
+  aes(
+  x = contrast,
+  y = average_alarm,
+  alpha = previous_contrast),
+  width = dodge_width,
+  position = position_dodge(width = dodge_width*2),
+  size = line_size_sd) +
+  geom_errorbar(data = Group_Data[Group_Data$Mode == "global",],
+  aes(
+  x = contrast,
+  y = mean,
+  ymax = mean + error, 
+  ymin = mean - error, 
+  alpha = previous_contrast),
+  width = dodge_width,
+  position = position_dodge(width = dodge_width*2),
+  size = line_size_gd) + 
+  geom_hline(
+  yintercept = c(0,0.5,1),
+  linetype = "dashed",
+  color = "black",
+  size = dot_size_sd
+  ) + 
+  theme_classic(base_size = 6) + labs(
+  x = "Contrast",
+  y = "Alarm rate",
+  alpha = "Previous contrast",
+  subtitle = "D"
+  ) + scale_color_brewer(palette = "Set1", direction = -1) + scale_fill_brewer(palette = "Set2", direction = -1) + theme(legend.position = "top") +
+  theme(panel.spacing=unit(1,"lines")) + facet_wrap(~Mode)
+
+p_main_accuracy_mode <- ggplot() + 
+  geom_point(data = Group_Data_ID[Group_Data_ID$Mode != "global",],
+  aes(
+  x = contrast,
+  y = average_alarm,
+  alpha = previous_contrast),
+  width = dodge_width,
+  position = position_dodge(width = dodge_width*2),
+  size = line_size_sd) +
+  geom_errorbar(data = Group_Data[Group_Data$Mode != "global",],
+  aes(
+  x = contrast,
+  y = mean,
+  ymax = mean + error, 
+  ymin = mean - error, 
+  alpha = previous_contrast),
+  width = dodge_width,
+  position = position_dodge(width = dodge_width*2),
+  size = line_size_gd) + 
+  geom_hline(
+  yintercept = c(0,0.5,1),
+  linetype = "dashed",
+  color = "black",
+  size = dot_size_sd
+  ) + 
+  theme_classic(base_size = 6) + labs(
+  x = "Contrast",
+  y = "Alarm rate",
+  color = "Previous contrast",
+  subtitle = NULL
+  ) + scale_color_brewer(palette = "Set1", direction = -1) + scale_fill_brewer(palette = "Set2", direction = -1) + theme(legend.position = "none") +
+  theme(panel.spacing=unit(1,"lines")) + facet_wrap(~Mode, nrow = 1)
+
+
+p_main_template_global <- ggplot(data = Group_Data_long[Group_Data_long$Mode == "global",],
+  aes(
+  x = Orientation,
+  y = mean,
+  ymin = mean - error,
+  ymax = mean + error,
+  color = previous_direction,
+  fill = previous_direction,
+  )) + 
+  geom_line(size = line_size_gd) + 
+  geom_ribbon(size = line_size_gd/4,
+  alpha = alpha_gd/4) +
+  theme_classic(base_size = 6) + labs(
+  x = "Orientation",
+  y = "Power (Alarm - Rejection)",
+  subtitle = "E"
+  ) +
+  geom_vline(
+  xintercept = c(90),
+  linetype = "dashed",
+  color = "black",
+  size = dot_size_sd
+  ) + 
+  scale_x_continuous(breaks = seq(0,180,30)) + 
+  coord_radial(start = -0.55 * pi, end = 0.55 * pi, expand = TRUE,
+  direction = 1,
+  inner.radius = 0
+) + theme(panel.grid.major=element_line(colour="grey"),panel.grid.minor=element_line(colour="grey")) + geom_point(aes(x = mean_orientation, y = mean_magnitude, color = previous_direction), size = line_size_gd *2) + 
+  scale_color_brewer(palette = "Dark2", direction = -1) + scale_fill_brewer(palette = "Dark2", direction = -1) + theme(legend.position = "top") + facet_wrap(~Mode)
+
+p_main_template_mode <- ggplot(data = Group_Data_long[Group_Data_long$Mode != "global",],
+  aes(
+  x = Orientation,
+  y = mean,
+  ymin = mean - error,
+  ymax = mean + error,
+  color = previous_direction,
+  fill = previous_direction,
+  )) + 
+  geom_line(size = line_size_gd) + 
+  geom_ribbon(size = line_size_gd/4,
+  alpha = alpha_gd/4) +
+  theme_classic(base_size = 6) + labs(
+  x = "Orientation",
+  y = "Power (Alarm - Rejection)",
+  subtitle = NULL
+  ) +
+  geom_vline(
+  xintercept = c(90),
+  linetype = "dashed",
+  color = "black",
+  size = dot_size_sd
+  ) + 
+  scale_x_continuous(breaks = seq(0,180,30)) + 
+  coord_radial(start = -0.55 * pi, end = 0.55 * pi, expand = TRUE,
+  direction = 1,
+  inner.radius = 0
+) + theme(panel.grid.major=element_line(colour="grey"),panel.grid.minor=element_line(colour="grey")) + geom_point(aes(x = mean_orientation, y = mean_magnitude, color = previous_direction), size = line_size_gd *2) + 
+  scale_color_brewer(palette = "Dark2", direction = -1) + scale_fill_brewer(palette = "Dark2", direction = -1) + theme(legend.position = "none") + facet_wrap(~Mode)
+
+
+
+p_Mode_summary  <- ggplot() + 
+  geom_point(data = Summary_Data_Mode_Prevalence_ID_long,
+  aes(
+  x = Mode,
+  y = Probability),
+  width = dodge_width,
+  size = line_size_sd,
+  alpha = alpha_sd) +
+  geom_errorbar(data = Group_Summary_Data_Mode_Prevalence_ID_long,
+  aes(
+  x = Mode,
+  y = mean,
+  ymax = mean + error, 
+  ymin = mean - error),
+  width = dodge_width,
+  size = line_size_gd,
+  alpha = alpha_gd) + 
+  theme_classic(base_size = 6) + labs(
+  x = "Mode",
+  y = "Probability",
+  subtitle = NULL
+  ) + scale_color_brewer(palette = "Set1", direction = -1) + scale_fill_brewer(palette = "Set2", direction = -1) + theme(legend.position = "top") +
+  theme(panel.spacing=unit(1,"lines"))
+
+Params$Type <- factor(Params$Type, levels = c("Stimulus", "History"), ordered = TRUE)
+p_Mode_parameter <-
+  ggplot(data = Params,
+    aes(x = Type , y = values)) + geom_bar(position = "dodge", stat = "identity",
+    width = 0.5
+  ) +
+  theme_classic(base_size = 6) + labs(
+    x = "Parameter",
+    y = "Posterior",
+    linetype = "",
+    color = "Mode", fill = NULL,
+    subtitle = NULL) + scale_color_brewer(palette = "Set1", direction = -1) + scale_fill_brewer(palette = "Set1", direction = -1) + theme(legend.position = "none") + facet_wrap(~Mode)
+
+trials_to_plot = seq(3000,3250,1)
+Data_plot = Data[trials_to_plot,]
+Data_plot$numeric_contrast = (as.numeric(Data_plot$contrast)-1)/2
+
+p_Mode_example <-
+  ggplot() + geom_point(
+    data = Data_plot,
+    aes(x = trials_to_plot-min(trials_to_plot)+1, y = response, 
+    color = as.factor(response)),
+    size = line_size_gd,
+    alpha = alpha_gd
+    
+  ) + geom_point(
+    data = Data_plot,
+    aes(x = trials_to_plot-min(trials_to_plot)+1, y = numeric_contrast, alpha = as.factor(numeric_contrast)),
+    size = line_size_gd/2,
+    color = "black"
+  ) +
+  geom_line(
+    data = Data_plot,
+    aes(x = trials_to_plot-min(trials_to_plot)+1, y = P_ext),
+    size = line_size_gd,
+    alpha = alpha_gd
+  ) +
+  theme_classic(base_size = 6) + labs(
+    x = "Trial",
+    y = "P(Mode = external)",
+    linetype = "",
+    subtitle = "C"
+  ) + geom_hline(
+    yintercept = c(0, 0.5, 1),
+    linetype = "dashed",
+    color = "black",
+    size = dot_size_sd
+  )  + scale_color_brewer(palette = "Set1", direction = -1) + scale_fill_brewer(palette = "Set1", direction = -1) + theme(legend.position = "none")
+
+
+trials_to_plot_2 = seq(1,20,1)
+Data_plot_2 = Data[trials_to_plot_2,]
+gathercol <- colnames(Data_plot_2 [,c(8:68)])
+Data_plot_long <- gather(Data_plot_2, "Orientation", "Power", gathercol, factor_key = TRUE)
+Data_plot_long$Orientation = as.numeric(gsub("X", "", Data_plot_long$Orientation))
+
+p_Mode_power_example_alarm <-
+  ggplot(data = Data_plot_long[Data_plot_long$response == 1,],
+    aes(x = Orientation, y = Power,
+    color = as.factor(trial), group =  as.factor(trial))) + 
+  geom_line(
+    size = line_size_gd/2,
+    alpha = alpha_gd
+  ) +
+  theme_classic(base_size = 6) + labs(
+    x = "Orientation",
+    y = "Power",
+    linetype = "",
+    subtitle = NULL) + theme(legend.position = "none") + scale_color_brewer(palette = "Reds", direction = -1) + scale_fill_brewer(palette = "Reds", direction = -1)
+
+p_Mode_power_example_rejection <-
+  ggplot(data = Data_plot_long[Data_plot_long$response == 0,],
+    aes(x = Orientation, y = Power,
+    color = as.factor(trial), group =  as.factor(trial))) + 
+  geom_line(
+    size = line_size_gd/2,
+    alpha = alpha_gd
+  ) +
+  theme_classic(base_size = 6) + labs(
+    x = "Orientation",
+    y = "Power",
+    linetype = "",
+    subtitle = "B") + theme(legend.position = "none") + scale_color_brewer(palette = "Blues", direction = -1) + scale_fill_brewer(palette = "Blues", direction = -1)
+
+# lay <- rbind(c(4,2), c(3,1))
+# grid.arrange(
+# 
+#   p_Mode_parameter,
+#   p_Mode_example,
+#   p_Mode_power_example_alarm,
+#   p_Mode_power_example_rejection,
+#   layout_matrix = lay,
+#   heights = c(1,1),
+#   widths = c(1,1)
+# )
+```
+
+![](./predictive_templates_files/figure-latex/Figure_1.png)
+
+**Figure 1.**
+
+**A. Paradigm.** Participants were instructed to report whether they perceived (close-to-) vertical gratings embedded in noise (left panel). At stimulus trials, gratings were presented either at low or at high contrast. At no-stimulus trials, no grating was presented (contrast = 0, middle panel). We reasoned that alarms would be more frequent when participant expect to experience a signal, and when the sensory noise is compatible with the predicted signal (($P(signal|noise) = P(signal) \times P(noise|signal)$, upper panel). We induced signal expectations $P(signal)$ by presenting stimuli in sequence (right panel). We hypothesized that such a sequence would induce false alarms (FAs) via the phenomenon of serial dependence. Serial dependencies cause perception to be biased toward preceding experiences, causing alarms to be more likely to be followed by alarm, and rejections more likely to be followed by rejection. Since serial dependencies are known to be stronger after confident experiences, we predicted that FAs would be more frequent after high-contrast stimuli. In the example shown on the right, our hypothesis therefore predicts that FAs would me most likely at the 2nd and 7th trial.
+
+**B. Predictive perceptual templates.** To compute the compatibility of the white noise with the expected signal ($P(noise|signal)$), we subtracted the power-by-orientation distribution of the random white noise images at rejection trials (blue) from the power-by-orientation distribution of the random noise images at alarm trials (red). The right panel the power power-by-orientation distributions of 20 example stimuli that occurred at alarm and rejection trials, respectively. 
+
+**C. External and internal modes in perception.** Perception is known to slowly alternate between two opposing modes (left panel): During external mode, perception is dominated by incoming stimuli, with weak serial dependencies between subsequent trials (grey arrows). By contrast, during internal mode, perception is shaped by the perceptual expectations induced by preceding experiences (strong serial dependencies, black arrows). The examples depicted within the circles illustrate the effect of external and internal mode on perception: In the external mode, perception dissociates from predictions that stem from serial dependencies, such that rejections (blue) often occur even after high-contrast stimuli. In the internal mode, perception is strongly biased toward previous experiences, causing alarms (red) to be more frequent after high-contrast stimuli. Between-mode alternations can by discovered by Hidden Markov Models (HMM). HMMs describe alternations between two independent General Linear Models (GLMs), each of which predicts perceptual experiences $y_t$ via weights assigned to the stimulus $\beta_S \times s_t$ at the current trial, and the experience made at the preceding trial $\beta_H \times y_{t-1}$. In this experiment, the GLM-HMM discovered an external mode ($`r mean(100-Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE)`$ ±  $`r (sd(100-Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE))/sqrt(length(Summary_Data_Mode_Prevalence_ID$P_int))`$% percent of trials), during which $\beta_S$ is high, while $\beta_H$ is low (middle and right panels), and an internal mode ($`r mean(Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE)`$ ±  $`r (sd(Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE))/sqrt(length(Summary_Data_Mode_Prevalence_ID$P_int))`$% percent of trials), during which $\beta_S$ is low, while the weight assigned to the history of previous $\beta_H$ is high.
+
+```{r Figure_2}
+p_main_accuracy_global <- ggplot() + 
+  geom_point(data = Group_Data_ID[Group_Data_ID$Mode == "global",],
+  aes(
+  x = contrast,
+  y = average_alarm,
+  alpha = previous_contrast),
+  width = dodge_width,
+  position = position_dodge(width = dodge_width*2),
+  size = line_size_sd,
+  color = "#E41A1C") +
+  geom_errorbar(data = Group_Data[Group_Data$Mode == "global",],
+  aes(
+  x = contrast,
+  y = mean,
+  ymax = mean + error, 
+  ymin = mean - error, 
+  alpha = previous_contrast),
+  width = dodge_width,
+  position = position_dodge(width = dodge_width*2),
+  size = line_size_gd,
+  color = "#E41A1C") + 
+  geom_hline(
+  yintercept = c(0,0.5,1),
+  linetype = "dashed",
+  color = "black",
+  size = dot_size_sd
+  ) + 
+  theme_classic(base_size = 6) + labs(
+  x = "Contrast",
+  y = "Alarm rate",
+  alpha = "Previous contrast",
+  subtitle = NULL
+  ) + scale_color_brewer(palette = "Set1", direction = -1) + scale_fill_brewer(palette = "Set2", direction = -1) + theme(legend.position = "top") +
+  theme(panel.spacing=unit(1,"lines")) + facet_wrap(~Mode)
+
+p_main_accuracy_mode <- ggplot() + 
+  geom_point(data = Group_Data_ID[Group_Data_ID$Mode != "global",],
+  aes(
+  x = contrast,
+  y = average_alarm,
+  alpha = previous_contrast),
+  width = dodge_width,
+  position = position_dodge(width = dodge_width*2),
+  size = line_size_sd,
+  color = "#E41A1C") +
+  geom_errorbar(data = Group_Data[Group_Data$Mode != "global",],
+  aes(
+  x = contrast,
+  y = mean,
+  ymax = mean + error, 
+  ymin = mean - error, 
+  alpha = previous_contrast),
+  width = dodge_width,
+  position = position_dodge(width = dodge_width*2),
+  size = line_size_gd,
+  color = "#E41A1C") + 
+  geom_hline(
+  yintercept = c(0,0.5,1),
+  linetype = "dashed",
+  color = "black",
+  size = dot_size_sd
+  ) + 
+  theme_classic(base_size = 6) + labs(
+  x = "Contrast",
+  y = "Alarm rate",
+  color = "Previous contrast",
+  subtitle = NULL
+  ) + scale_color_brewer(palette = "Set1", direction = -1) + scale_fill_brewer(palette = "Set2", direction = -1) + theme(legend.position = "none") +
+  theme(panel.spacing=unit(1,"lines")) + facet_wrap(~Mode, nrow = 1)
+
+
+p_main_template_global <- ggplot(data = Group_Data_long[Group_Data_long$Mode == "global",],
+  aes(
+  x = Orientation,
+  y = mean,
+  ymin = mean - error,
+  ymax = mean + error,
+  color = previous_direction,
+  fill = previous_direction,
+  )) + 
+  geom_line(size = line_size_gd) + 
+  geom_ribbon(size = line_size_gd/4,
+  alpha = alpha_gd/4) +
+  theme_classic(base_size = 6) + labs(
+  x = "Orientation",
+  y = "Power (Alarm - Rejection)",
+  subtitle = "E"
+  ) +
+  geom_vline(
+  xintercept = c(90),
+  linetype = "dashed",
+  color = "black",
+  size = dot_size_sd
+  ) + 
+  scale_x_continuous(breaks = seq(0,180,30)) + 
+  coord_radial(start = -0.55 * pi, end = 0.55 * pi, expand = TRUE,
+  direction = 1,
+  inner.radius = 0
+) + theme(panel.grid.major=element_line(colour="grey"),panel.grid.minor=element_line(colour="grey")) + geom_point(aes(x = mean_orientation, y = mean_magnitude, color = previous_direction), size = line_size_gd *2) + 
+  scale_color_brewer(palette = "Dark2", direction = -1) + scale_fill_brewer(palette = "Dark2", direction = -1) + theme(legend.position = "top") + facet_wrap(~Mode)
+
+p_main_template_mode <- ggplot(data = Group_Data_long[Group_Data_long$Mode != "global",],
+  aes(
+  x = Orientation,
+  y = mean,
+  ymin = mean - error,
+  ymax = mean + error,
+  color = previous_direction,
+  fill = previous_direction,
+  )) + 
+  geom_line(size = line_size_gd) + 
+  geom_ribbon(size = line_size_gd/4,
+  alpha = alpha_gd/4) +
+  theme_classic(base_size = 6) + labs(
+  x = "Orientation",
+  y = "Power (Alarm - Rejection)",
+  subtitle = NULL
+  ) +
+  geom_vline(
+  xintercept = c(90),
+  linetype = "dashed",
+  color = "black",
+  size = dot_size_sd
+  ) + 
+  scale_x_continuous(breaks = seq(0,180,30)) + 
+  coord_radial(start = -0.55 * pi, end = 0.55 * pi, expand = TRUE,
+  direction = 1,
+  inner.radius = 0
+) + theme(panel.grid.major=element_line(colour="grey"),panel.grid.minor=element_line(colour="grey")) + geom_point(aes(x = mean_orientation, y = mean_magnitude, color = previous_direction), size = line_size_gd *2) + 
+  scale_color_brewer(palette = "Dark2", direction = -1) + scale_fill_brewer(palette = "Dark2", direction = -1) + theme(legend.position = "none") + facet_wrap(~Mode)
+
+
+lay <- rbind(c(1,2))
+grid.arrange(
+  p_main_accuracy_global,
+  p_main_accuracy_mode,
+  layout_matrix = lay,
+  heights = c(1),
+  widths = c(1,1.5)
+)
+```
+
+**Figure 2. The effect of serial dependencies on alarms and rejections depend on mode.** Globally, alarm rate correlated positively with the contrast of stimuli presented at the preceding trial ($`r STAT.alarm_resp_contr$coefficients[4,1]`$ ± $`r STAT.alarm_resp_contr$coefficients[4,2]`$, z = $`r STAT.alarm_resp_contr$coefficients[4,3]`$, p = $`r STAT.alarm_resp_contr$coefficients[4,4]`$). This suggests that serial dependencies contribute to FAs. When separating our data in episodes of external and internal modes, we found positive serial dependencies only during the internal mode ($`r STAT.alarm_resp_contr_internal$coefficients[4,1]`$ ± $`r STAT.alarm_resp_contr_internal$coefficients[4,2]`$, z = $`r STAT.alarm_resp_contr_internal$coefficients[4,3]`$, p = $`r STAT.alarm_resp_contr_internal$coefficients[4,4]`$). During the external mode, by contrast, we observed a negative correlation between alarm rate and preceding stimulus contrast ($`r STAT.alarm_resp_contr_external$coefficients[4,1]`$ ± $`r STAT.alarm_resp_contr_external$coefficients[4,2]`$, z = $`r STAT.alarm_resp_contr_external$coefficients[4,3]`$, p = $`r STAT.alarm_resp_contr_external$coefficients[4,4]`$).
+
+```{r Figure_3}
+
+p_main_template_global <- ggplot(data = Group_Data_long[Group_Data_long$Mode == "global",],
+  aes(
+  x = Orientation,
+  y = mean,
+  ymin = mean - error,
+  ymax = mean + error,
+  color = previous_direction,
+  fill = previous_direction,
+  )) + 
+  geom_line(size = line_size_gd) + 
+  geom_ribbon(size = line_size_gd/4,
+  alpha = alpha_gd/4) +
+  theme_classic(base_size = 6) + labs(
+  x = "Orientation",
+  y = "Power (Alarm - Rejection)",
+  subtitle = NULL
+  ) +
+  geom_vline(
+  xintercept = c(90),
+  linetype = "dashed",
+  color = "black",
+  size = dot_size_sd
+  ) + 
+  scale_x_continuous(breaks = seq(0,180,30)) + 
+  coord_radial(start = -0.55 * pi, end = 0.55 * pi, expand = TRUE,
+  direction = 1,
+  inner.radius = 0
+) + theme(panel.grid.major=element_line(colour="grey"),panel.grid.minor=element_line(colour="grey")) + geom_point(aes(x = mean_orientation, y = mean_magnitude, color = previous_direction), size = line_size_gd *2) + 
+  scale_color_brewer(palette = "Dark2", direction = -1) + scale_fill_brewer(palette = "Dark2", direction = -1) + theme(legend.position = "top") + facet_wrap(~Mode)
+
+p_main_template_mode <- ggplot(data = Group_Data_long[Group_Data_long$Mode != "global",],
+  aes(
+  x = Orientation,
+  y = mean,
+  ymin = mean - error,
+  ymax = mean + error,
+  color = previous_direction,
+  fill = previous_direction,
+  )) + 
+  geom_line(size = line_size_gd) + 
+  geom_ribbon(size = line_size_gd/4,
+  alpha = alpha_gd/4) +
+  theme_classic(base_size = 6) + labs(
+  x = "Orientation",
+  y = "Power (Alarm - Rejection)",
+  subtitle = NULL,
+  color = "Preceding stimulus"
+  ) +
+  geom_vline(
+  xintercept = c(90),
+  linetype = "dashed",
+  color = "black",
+  size = dot_size_sd
+  ) + 
+  scale_x_continuous(breaks = seq(0,180,30)) + 
+  coord_radial(start = -0.55 * pi, end = 0.55 * pi, expand = TRUE,
+  direction = 1,
+  inner.radius = 0
+) + theme(panel.grid.major=element_line(colour="grey"),panel.grid.minor=element_line(colour="grey")) + geom_point(aes(x = mean_orientation, y = mean_magnitude, color = previous_direction), size = line_size_gd *2) + 
+  scale_color_brewer(palette = "Dark2", direction = -1) + scale_fill_brewer(palette = "Dark2", direction = -1) + theme(legend.position = "none") + facet_wrap(~Mode)
+
+
+lay <- rbind(c(1,2))
+grid.arrange(
+  p_main_template_global,
+  p_main_template_mode,
+  layout_matrix = lay,
+  heights = c(1),
+  widths = c(1,2)
+)
+```
+
+  **Figure 3. The effect of predictive templates on alarms and rejections depends on mode.** Globally, the classification images computed for alarms (power-by-orientation distribution at alarm trials relative to the power-by-orientation distribution at rejection trials) revealed a peak around 90°. This corresponds the average orientation of the signal ($`r STAT.mode_FA$coefficients[2,1]`$ ± $`r STAT.mode_FA$coefficients[2,2]`$, T($`r STAT.template_alarm$coefficients[2,3]`$) = $`r STAT.template_alarm$coefficients[2,4]`$, p = $`r STAT.template_alarm$coefficients[2,5]`$). 
+  During the internal mode, we found a shift of the close-to-vertical noise power peak toward the orientation of the preceding stimulus ($`r STAT.vector_internal$coefficients[2,1]`$ ± $`r STAT.vector_internal$coefficients[2,2]`$, T($`r STAT.vector_internal$coefficients[2,3]`$) = $`r STAT.vector_internal$coefficients[2,4]`$, p = $`r STAT.vector_internal$coefficients[2,5]`$; clockwise tilt [CW] in green, counter-clockwise tilt [CCW] in orange). This was not observed during the external mode ($`r STAT.vector_external$coefficients[2,1]`$ ± $`r STAT.vector_external$coefficients[2,2]`$, T($`r STAT.vector_external$coefficients[2,3]`$) = $`r STAT.vector_external$coefficients[2,4]`$, p = $`r STAT.vector_external$coefficients[2,5]`$).
+
+\newpage
+
+# Supplementary Information
+
+## Supplemental Figure SX1
+
+```{r Supplemental_Figure_SX1}
+p_BIC <- ggplot() +
+  geom_point(data = df_combined,
+  aes(
+  x = as.factor(num_states),
+  y = BIC,
+  color = type),
+  width = dodge_width,
+  position = position_jitterdodge(dodge.width = dodge_width*2, jitter.width = dodge_width/2,
+  jitter.height = 0),
+  size = line_size_gd*2,
+  alpha = alpha_sd) +
+  geom_errorbar(data = Group_BIC,
+  aes(
+  x = as.factor(num_states),
+  y = mean,
+  ymax = mean + error,
+  ymin = mean - error,
+  color = type),
+  width = dodge_width,
+  position = position_dodge(width = dodge_width*2),
+  size = line_size_gd) +
+  theme_classic(base_size = 6) + labs(
+  x = "Number of States",
+  y = "BIC"
+  ) + scale_color_brewer(palette = "Set1", direction = 1) + scale_fill_brewer(palette = "Set2", direction = 1) + theme(legend.position = "top") +
+  theme(panel.spacing=unit(1,"lines"))
+p_BIC
+```
+**Supplemental Figure SX1.** We used Bayesian model comparison to evaluate whether the two-state GLM-HMM (number of parameters: 8) provided a more parsimonious explanation of our data in comparison to the one-state control model (number of parameters: 2). To compare the two models, we computed the difference in $\text{BIC} = \log(N) \cdot k - 2 \cdot \log(L)$. Relative to the one-state GLM, the two-state GLM-HMM yielded a reduction in BI by  $\delta_{BIC}$ =  $`r Group_BIC[Group_BIC$num_states == 2 & Group_BIC$type == "original",]$mean - Group_BIC[Group_BIC$num_states == 1 & Group_BIC$type == "original",]$mean`$ (red).
+We did not observe this reduction when we randomly shuffled the trials for a total of 100 iterations, and computed BICs for these randomly permuted data (average $\delta_{BIC}$ =  $`r Group_BIC[Group_BIC$num_states == 2 & Group_BIC$type == "permuted",]$mean - Group_BIC[Group_BIC$num_states == 1 & Group_BIC$type == "permuted",]$mean`$; blue).
+
+\newpage
+## Supplemental Figure SX2
+
+```{r Supplemental_Figure_SX2}
+
+Summary_Data_Mode_versus_contrast <-
+    ddply(
+      Data,
+      .(contrast, previous_contrast, ID),
+      summarise,
+      average_P_ext = 100 * sum(Mode == "external", na.rm = TRUE)/length(Mode)
+    )
+
+Group_Data_Mode_versus_contrast <-
+    ddply(
+      Summary_Data_Mode_versus_contrast[!is.na(Summary_Data_Mode_versus_contrast$previous_contrast),],
+      .(contrast, previous_contrast),
+      summarise,
+      mean = mean(average_P_ext, na.rm = TRUE),
+      error = sd(average_P_ext, na.rm = TRUE)/sqrt(length(average_P_ext))
+    )
+
+p_Mode_versus_contrast <- ggplot() + 
+  geom_point(data = Summary_Data_Mode_versus_contrast[!is.na(Summary_Data_Mode_versus_contrast$previous_contrast),],
+    aes(
+      x = contrast,
+      y =  average_P_ext,
+      alpha = previous_contrast),  # Added alpha based on error for visualization
+    width = dodge_width,
+    position = position_dodge(width = dodge_width*2),
+    size = line_size_sd) +
+  geom_errorbar(data = Group_Data_Mode_versus_contrast,
+    aes(
+      x = contrast,
+      y = mean,
+      ymax = mean + error,
+      ymin = mean - error,
+      alpha = previous_contrast),  # Added alpha based on error for visualization
+    width = dodge_width,
+    position = position_dodge(width = dodge_width*2),
+    size = line_size_gd) +
+  geom_hline(
+    yintercept = c(0,50,100),  # Changed yintercept values to match y-axis limits
+    linetype = "dashed",
+    color = "black",
+    size = dot_size_sd
+  ) + 
+  theme_classic(base_size = 6) + labs(
+    x = "Contrast",
+    y = "Probability of external mode",
+    alpha = "Previous contrast",
+    subtitle = NULL
+  ) + 
+  scale_color_brewer(palette = "Set1", direction = -1) + 
+  scale_fill_brewer(palette = "Set1", direction = -1) + 
+  theme(legend.position = "top") +
+  theme(panel.spacing = unit(1, "lines")) + 
+  ylim(0, 100)
+p_Mode_versus_contrast
+
+
+if (!load_summary_data) {
+
+external_mode_contr = glmer(P_ext ~ contrast + previous_contrast + (1 | ID), data = Data, family = binomial(link = logit))
+STAT.external_mode_contr = summary(external_mode_contr)
+
+  if (save_summary_data) {
+    save(STAT.external_mode_contr,
+        file = "./Results/external_mode_contr.Rdata")
+  }
+} else {
+  load("./Results/external_mode_contr.Rdata")
+}
+
+# Convert the data to a factor or character vector
+contrast_vector <- as.character(Data$contrast)
+high_positions <- which(contrast_vector == "high")
+intervals <- diff(high_positions)
+mean_interval <- mean(intervals, na.rm = TRUE)
+sem_interval <- sd(intervals) / sqrt(length(intervals))
+```
+
+**Supplemental Figure SX2.** As an alternative explanation for the slow and spontaneous alternations between external and internal modes, one may assume a response heuristic that uses the external sensory data when it is reliable (i.e., at high-contrast trials), and applies internal predictions when the external sensory data is not reliable (i.e., no-stimulus and low-contrast trials). The latter explanation would entail that the trial-wise probability of external depends exclusively on contrast. 
+We found that the probability of the external mode was higher when the contrast at the current trial was high (
+$`r STAT.external_mode_contr$coefficients[2,1]`$ ± $`r STAT.external_mode_contr$coefficients[2,2]`$, z = $`r STAT.external_mode_contr$coefficients[2,3]`$, p = $`r STAT.external_mode_contr$coefficients[2,4]`$), 
+and when contrast at the preceding trial was high ($`r STAT.external_mode_contr$coefficients[4,1]`$ ± $`r STAT.external_mode_contr$coefficients[4,2]`$, z = $`r STAT.external_mode_contr$coefficients[4,3]`$, p = $`r STAT.external_mode_contr$coefficients[4,4]`$). 
+This suggests that stimuli with high signal-to-noise ratio make switches to the external mode more likely. However, the overall change in the probability of external mode, which ranged form a minimum of $`r min(Group_Data_Mode_versus_contrast$mean)`$% to a maximum of $`r min(Group_Data_Mode_versus_contrast$mean)`$%, was small. Moreover, te average interval between mode switches ($`r mean(average_intervals_df$interval, na.rm = TRUE)`$ ± $`r (sd(average_intervals_df$interval, na.rm = TRUE))/sqrt(length(average_intervals_df$interval))`$trials) was approximately eight times longer than the average interval between high-contrast stimuli ($`r mean_interval`$ ± $`r sem_interval`$ trials). In sum, our analyses therefore reveal a potential role of high signal-to-noise ratio for mode alternations, but are not compatbile with the view that external and internal modes reflect response strategies applied exclusively to stimuli at high and low signal-to-noise ratio, respectively. 
+
+\newpage
+## Supplemental Table S1
+
+| RESOURCE                                   | SOURCE                                            | IDENTIFIER                |
+| ---------------------------------- | ------------------------------------------------- | ------------------------- |
+| **Deposited data & code**                         |
+| Analyzed data & custom code        | https://github.com/veithweilnhammer/predictive_templates/                                       | N/A    |
+| **Software**                       |
+| **Python 3**                               | http://www.python.org/                            | RRID:SCR_008394           |
+| Jupyter Notebook                           | https://jupyter.org/                              | RRID:SCR_018315           |
+| numpy                                      | http://www.numpy.org                              | RRID:SCR_008633           |
+| pandas                                     | https://pandas.pydata.org                         | RRID:SCR_018214           |
+| SSM                                        | https://github.com/lindermanlab/ssm               | N/A           |
+| **Matlab**                                 | https://www.mathworks.com/                        | RRID:SCR_001622           |
+| Psychtoolbox 3                             | http://psychtoolbox.org/                            | RRID:SCR_002881           |
+| **R**                                      | http://www.r-project.org/                         | RRID:SCR_001905           |
+| RStudio                                    | https://www.rstudio.com/                          | RRID:SCR_000432           |
+| lme4, afex, ggplot2, ggridges, gridExtra, tidyr, plyr| http://cran.r-project.org/          | RRID:SCR_003005            |
+
+\newpage
+
+# References
