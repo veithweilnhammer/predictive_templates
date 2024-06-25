@@ -1,0 +1,1032 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % set entry spacing
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+\usepackage{setspace}\doublespacing
+\usepackage[fontsize=12pt]{scrextend}
+\usepackage[left]{lineno}
+\usepackage[labelformat=empty]{caption}
+\usepackage{longtable}
+\usepackage{booktabs}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+
+\hypertarget{title-page}{%
+\section{Title Page}\label{title-page}}
+
+\textbf{Title:} Dynamic predictive templates in perception\\
+
+\textbf{Authors}:
+
+Veith Weilnhammer\(^{1}\), Yuki Murai\(^{2}\), David Whitney\(^{1}\)\\
+
+\hfill\break
+\textbf{Affiliations and Contribution}:
+
+\(^{1}\) Helen Wills Neuroscience Institute, University of California
+Berkeley, USA\\
+\(^{2}\) Center for Information and Neural Networks, Osaka, Japan\\
+
+\hfill\break
+
+\textbf{Corresponding Author}:
+
+Veith Weilnhammer, Helen Wills Neuroscience Institute, University of
+California Berkeley, USA, email:
+\href{mailto:veith.weilnhammer@gmail.com}{\nolinkurl{veith.weilnhammer@gmail.com}}\\
+\strut \\
+\textbf{Word Count}: 2242 words (main text without methods)\\
+
+\newpage
+\linenumbers
+
+\hypertarget{summary}{%
+\section{Summary}\label{summary}}
+
+False alarms occur when participants report a signal that was not
+presented. Hallucinations reflect perceptual experiences that unfold in
+the absence of an external cause. To serve as an experimental proxy for
+hallucinations, false alarms must meet two criteria: First, false alarms
+should not only reflect erroneous reports of a signal, but represent
+perceptual states that are characterized by specific contents. Second,
+false alarms should occur on a timescale compatible with the temporal
+dynamics of hallucinations. In this work, we combined a classification
+image approach with Hidden Markov Models to show that false alarms can
+match the perceptual and temporal characteristics of hallucinations. We
+asked healthy human participants to discriminate difficult-to-detect
+visual stimuli from noise, and found that false alarms were more likely
+to occur during an internal mode of sensory processing, a minute-long
+state of the brain during which the content of perception is strongly
+biased toward previous experiences. Our results suggest that
+hallucinations are driven by dynamic predictive templates that transform
+noise into transient, recurring, coherent, and meaningful perceptual
+experiences.
+
+\hypertarget{results}{%
+\section{Results}\label{results}}
+
+Hallucinations are vivid and transient experiences of objects, such as
+images or sounds, that occur in the absence of a corresponding
+stimulus\textsuperscript{1--7}. These phenomena occur across a wide
+spectrum of neuropsychiatric disorders, but are particularly
+characteristic of schizophrenia, a severe and chronic mental health
+condition typically associated with repeated episodes of
+psychosis\textsuperscript{6,8,9}.
+
+To better understand the computational and neural mechanisms of
+hallucinations, cognitive neuroscience has primarily focused on
+experiments that induce false alarms (FA) in healthy
+participants\textsuperscript{1--5,7}, psychosis prone
+individuals\textsuperscript{1,3,4}, and patients diagnosed with
+schizophrenia\textsuperscript{5}. FAs occur when participants make
+decisions about difficult-to-detect stimuli, and report the presence of
+a signal that was, in fact, not presented.
+
+Previous studies have shown that FA become more likely when people
+\emph{expect} the presence of a stimulus. In line with this idea, FAs
+can be induced via cross-modal conditioning\textsuperscript{1,3--5} and
+manipulations of signal probability\textsuperscript{7}. A number of
+empirical findings indicate that such conditioned FAs may provide a
+window into the neural mechanisms of hallucinations: Conditioned FAs are
+more frequent in hallucination-prone individuals\textsuperscript{1--4,7}
+and patients diagnosed with schizophrenia\textsuperscript{5}. Moreover,
+they can be triggered by dopamine\textsuperscript{7}, an established
+molecular endophenotype of schizophrenia\textsuperscript{10}, as well as
+by ketamine\textsuperscript{7}, a NMDA-receptor antagonist that elicits
+psychotic symptoms\textsuperscript{11}.
+
+However, one of the most important limitations in the current
+state-of-the art is that FAs are, at heart, reports. What remains to be
+established is whether FAs are accompanied by perceptual experiences.
+Even though hallucinations have varying phenomenological properties
+across the disorders in which they occur, and may reflect unstructured
+noise-like percepts, particularly at early stages of psychotic illness,
+they are typically associated with specific perceptual contents that
+have meaning to the afflicted individual\textsuperscript{12--14}.
+Moreover, the focus on behavioral reports has led previous studies to
+investigate FAs at the level of individual stimulus presentations within
+signal detection experiments\textsuperscript{1,7}. This assumes that the
+underlying mechanisms are isolated events that depend, at least in part,
+on an experimental intervention\textsuperscript{1,3--5,7},
+trait\textsuperscript{1--5,7} or diagnosis\textsuperscript{5}.
+Hallucinations, by contrast, are neither momentary nor constant, but
+typically unfold as coherent and transient experiences over the course
+of seconds, minutes or hours\textsuperscript{15,16}.
+
+Here, we present a novel paradigm that can help to determine whether FAs
+share the perceptual and temporal characteristics of hallucinations.
+First, we use a classification image approach\textsuperscript{17} to
+show that FAs cannot be reduced to behavioral reports, but occur when
+the external sensory input matches the features of an internal
+predictive template that is defined by a specific perceptual content
+(criterion 1). Second, we apply Hidden Markov Models\textsuperscript{18}
+(HMMs) to show that FA, and the underlying predictive templates, are
+linked to recurring minute-long intervals of internal mode processing, a
+state of the brain during which the content of perception is strongly
+biased toward previous experiences (criterion 2).
+
+\hypertarget{criterion-1-the-perceptual-quality-of-fas}{%
+\subsection{Criterion 1: The perceptual quality of
+FAs}\label{criterion-1-the-perceptual-quality-of-fas}}
+
+According to Bayes theorem, alarms (\(P(signal|input)\)) become likely
+when people expect to see a signal (\(P(signal)\), prior), and when the
+features of a noisy input are compatible with the expected signal
+(\(P(input|signal)\), likelihood). In natural environments, where the
+recent past is a predictor of the near future, previous stimuli may
+induce expectations about what is likely to be perceived
+next\textsuperscript{19,20}. This generates predictive templates that
+integrate experiences over time\textsuperscript{21}
+(\(P(signal|input) = P(signal) \times P(input|signal)\)), giving rise to
+the phenomenon of perceptual serial dependence\textsuperscript{22--26}.
+
+Predictive templates may improve the interpretation of noisy but
+predictable sensory inputs\textsuperscript{21,27}. When overly strong,
+however, predictive templates lose their adaptive function and may cause
+people to experience spurious signals in noise (\(P(signal|noise)\)).
+With respect to the study of hallucinations, the critical question is
+whether FAs are driven solely by signal expectations (\(P(signal)\),
+prior), in which case they may just be behavioral responses without any
+perceptual quality, or if they also depend on the compatibility of the
+noise with the expected signal (\(P(noise|signal)\), likelihood). The
+latter case would indicate that FAs are accompanied by perceptual
+experiences with a specific content.
+
+To test the contribution of prior and likelihood to FAs, we analyzed
+data from 22 participants who judged whether close-to vertical gratings
+(signals) were present (alarms) or absent (rejections) in white noise
+image (Figure 1A). The alarm rate depended on three factors: the
+contrast of the signal at the current trial (\(4.38\) ± \(0.07\), z =
+\(60.76\), p < \(\ensuremath{2.2\times 10^{-308}}\)), the contrast of the signal at the preceding trial
+(\(0.11\) ± \(0.03\), z = \(4.33\), p =
+\(\ensuremath{1.5\times 10^{-5}}\), Figure 2), and the relative power of
+the current noise image at close-to-vertical orientations (60 to 120
+degrees), relative to the total power over all orientations (\(0.1\) ±
+\(0.01\), z = \(8.97\), p = \(\ensuremath{2.9\times 10^{-19}}\), Figure
+1B).
+
+This confirms that FAs were driven by predictive templates: FAs were
+more likely when the stimulus presented at the preceding trial induced a
+strong signal expectation (\(P(signal)\)), and when the sensory noise at
+the current trial matched the features of the expected signal
+(\(P(noise|signal)\)). To visualize these predictive templates, we
+subtracted the noise power at rejection trials from the noise power at
+alarm trials (Figure 3). The resulting classification
+images\textsuperscript{17} revealed a noise power peak at
+close-to-vertical-orientations (\(0.1\) ± \(0.02\),
+T(\(\ensuremath{1.37\times 10^{4}}\)) = \(7.24\), p =
+\(\ensuremath{4.84\times 10^{-13}}\)) that matched the average
+orientation of the signals.
+
+If FAs were simply lapses or biases in response behavior, one would
+expect a flat classification image that mirrors the overall flat
+power-by-orientation distribution in the white noise stimuli used in our
+experiment. This was clearly not the case: FAs occurred more frequently
+at noise stimuli that matched a feature of the signal (high power at
+close-to-vertical orientations; Figure 3). Critically, observers learned
+the features of the average signal from the sequence of experiences they
+made throughout the experiment.
+
+Our findings therefore support criterion 1: at the time of FAs,
+observers perceived specific contents - in this case, gratings with a
+close-to-vertical orientation. The hallucinated content was determined
+by predictive templates that are generated by the sequence of preceding
+experiences\textsuperscript{21--26}
+(\(P(signal|noise) = P(signal) \times P(noise|signal)\)).
+
+\hypertarget{criterion-2-the-temporal-dynamics-of-predictive-templates}{%
+\subsection{Criterion 2: The temporal dynamics of predictive
+templates}\label{criterion-2-the-temporal-dynamics-of-predictive-templates}}
+
+Hallucinations are transient, coherent, an often-meaningful experiences
+that unfold over time\textsuperscript{12--16}. A valid experimental
+proxy for hallucinations should therefore fluctuate at a timescale
+compatible with the duration of hallucinatory experiences. In the case
+of FAs, this means that the underlying predictive templates should be
+dynamic, and generate recurrent and transient intervals during which
+perception is strongly biased toward previous experiences.
+
+To assess the temporal dynamics of the predictive templates, we
+estimated HMMs that inferred transitions between two latent states, each
+linked to a General Linear Model (GLM) that predicted trial-wise
+responses \(y_t\) (alarms versus rejections) from the signal contrast at
+the current trial (\(\beta_s \times s_t\)) and the response at the
+preceding trial (\(\beta_H \times y_{t-1}\), Figure 1C). In line with
+previous results\textsuperscript{18,20}, the HMMs revealed slow
+alternations between an external mode, where perception closely followed
+external stimulus (\(\beta_S > \beta_H\)), and an internal mode, where
+perception was strongly biased by preceding experiences (\(\beta_S\)
+\textless{} \(\beta_H\), Figure 1C).
+
+Bayesian model comparison indicated that the two-state GLM provided a
+more parsimonious description of the data than the one-state control
+model (reduction in BIC: \(\delta_{BIC}\) =
+\(\ensuremath{-1.12\times 10^{3}}\); see Supplemental Figure S1 for
+control analyses on randomly permuted data, for which the advantage of
+the two-state GLM was lost).
+
+Participants spent \(28.7\) ± \(3.5\)\% of their time in internal mode,
+with alternation between modes occurring in intervals of \(59.1\) ±
+\(8.8\) trials, corresponding to \(118.21\) ± \(17.6\) sec.~External and
+internal mode fluctuated spontaneously, and were only marginally
+modulated by contrast of the signal grating (Supplemental Figure S2).
+The GLMs that defined the external and internal mode were independent
+from the orientation of the signal, the contrast of the signal at the
+preceding trial, and the power-by-orientation distribution of the noise.
+Any between-mode difference in the classification images was therefore
+indicative of dynamic changes in the underlying predictive templates.
+
+We found that the internal mode increased the rate of FAs relative to
+external mode (\(0.1\) ± \(0.02\), T(\(109\)) = \(4.61\), p =
+\(\ensuremath{1.1\times 10^{-5}}\), Figure 2). In the internal mode,
+perception depended more on the contrast of the stimulus presented at
+the preceding trial (\(1\) ± \(0.06\), z = \(16.86\), p =
+\(\ensuremath{8.76\times 10^{-64}}\)) and less on contrast of the
+stimulus presented at the current trial (\(-1.16\) ± \(0.15\), z =
+\(-7.64\), p = \(\ensuremath{2.18\times 10^{-14}}\)). The effect of
+signal expectations (\(P(signal)\)) on perception were thus exaggerated
+during the internal mode.
+
+Alarms during the internal mode were associated with a close-to-vertical
+noise-power-peak that was shifted toward the orientation of the stimulus
+presented at the preceding trial (\(19.87\) ± \(6.73\), T(\(20.28\)) =
+\(2.95\), p = \(\ensuremath{7.82\times 10^{-3}}\), Figure 3). This shift
+was not observed during the external mode (\(-3.67\) ± \(6.27\),
+T(\(20.15\)) = \(-0.59\), p = \(0.56\)). This suggests that the
+predictive templates, and the associated bias in the content of
+perception toward previous experiences, were particularly strong during
+the internal mode.
+
+Our findings therefore confirmed criterion 2: the predictive templates
+that drive FAs are dynamic and fluctuate according to two opposing
+external and internal modes of perception. Alternations between modes
+occurred at the order of minutes, and were thus compatible with the
+temporal duration of hallucinations. During the internal mode, FAs were
+associated with hallucinated contents that were skewed toward previous
+experiences.
+
+\hypertarget{discussion}{%
+\section{Discussion}\label{discussion}}
+
+Our results indicate that the FAs observed here are dynamic perceptual
+phenomena, which are characterized by specific content and are driven by
+dynamic predictive templates. These templates fluctuate in intervals of
+several minutes and are particularly strong during internal modes of
+sensory processing. This confirms that FAs induced by signal-detection
+experiments can match the perceptual\textsuperscript{12--14} and
+temporal\textsuperscript{15,16} quality of hallucinations.
+
+Our findings suggest that FAs, and potentially hallucinations, are
+linked to alternations between external and internal modes of
+perception. External and internal modes have repeatedly been observed in
+mice\textsuperscript{20,28}, healthy human
+participants\textsuperscript{20}, and patients diagnosed with
+schizophrenia\textsuperscript{18}. We found that the internal mode not
+only increased the rate of FAs, but also enhanced the extent to which
+the content perceived at the time of FAs was skewed toward previous
+experiences.
+
+This finding points to a tentative mechanism for how hallucinations
+emerge, persist, and end: During the internal mode, a hallucination may
+emerge as a FA that occurs when (i), a specific context induces signal
+expectations (e.g., hearing the neighbors voice in one's apartment,
+\(P(signal)\)) and (ii), the sensory input is compatible with the
+average features of the expected signal (e.g., construction noise that
+matches the features of human speech, \(P(input|signal)\)). The internal
+mode enhances the effect of preceding experiences on perception and may
+allow the hallucinated content to persist over time as a coherent
+experience. A transition from internal to external mode greatly reduces
+the strength of the predictive template in which the hallucination
+unfolds, ultimately causing the end of the experience. Future research
+could test this hypothesis by testing whether FAs, and ultimately the
+hallucinations experienced by people living with psychotic symptoms, can
+be mitigated by interventions that disrupt the internal mode.
+
+During the internal mode, the average vectors of the classification
+images were displaced by \(20.18\) ± \(3.12\) degrees from vertical
+(Figure 3). The direction of the vectors depended on the predictive
+template, i.e., the orientation of the stimulus presented at the
+preceding trial. Interestingly, the displacement of the classification
+vectors from vertical was larger than the orientation of the
+high-contrast gratings (-10 and 10 degrees from vertical, Figure 1A),
+which were most effective at inducing FAs during the internal mode
+(Figure 2). Since the high-contrast gratings stood out from the other
+stimuli in terms of contrast and orientation (low contrast gratings were
+presented at orientation ranging from -3 to 3, Figure 1A-B), one may
+suspect that the perceived orientation of the high-contrast grating
+exceeded their veridical orientation. An alternative explanation may be
+that FAs experiences exaggerated the features of the inducer, just as
+hallucinations often portray exaggerated version of everyday stimuli
+(such as hallucinated speech that stands out in terms of tone, pitch, or
+extreme content\textsuperscript{12--14}).
+
+Our findings suggests a key role of serial
+dependence\textsuperscript{22--25} and predictive
+templates\textsuperscript{26} for how hallucinations emerge and persist
+over time. This view overlaps with the so-called strong prior account of
+schizophrenia\textsuperscript{9}, where psychotic symptoms, and in
+particular hallucinations, are thought to occur due to an exaggerated
+effect of prior predictions on perception\textsuperscript{1--5,7}. At
+the same time, they seem at odds with the observation that prior are
+less effective in psychosis prone individuals\textsuperscript{29} and
+patients diagnosed with schizophrenia\textsuperscript{30} (the weak
+prior account of schizophrenia\textsuperscript{8}). So far, attempts to
+reconcile these disparate set of findings have argued that priors may be
+either weak or strong depending on the stage of psychotic
+illness\textsuperscript{9} (weak priors in early stages, and strong
+priors in later stages) or the cognitive hierarchy\textsuperscript{9}
+(weak priors at the perceptual level, and strong priors at the cognitive
+level).
+
+The fact that FAs, and potentially psychotic symptoms such as
+hallucinations, are tied to recurrent alternation between external and
+internal modes of perception may provide an alternative explanation for
+the apparent discrepancy between strong and weak priors: Psychosis prone
+individuals and patients diagnosed with schizophrenia may share general
+propensity toward the external mode, which reduces the effects of priors
+on perception\textsuperscript{29} and drives erratic responses to
+ambiguous sensory information\textsuperscript{18}. During the internal
+mode, psychosis prone individuals and patients diagnosed with
+schizophrenia may have stronger predictive templates that trigger and
+shape the content of hallucinations. The combination of classification
+images and HMMs provides a novel analytical framework to test this
+hypothesis, may help to advance our theoretical understanding of
+schizophrenia, and can pave the way towards innovations in mental health
+that benefit people living with psychotic symptoms.
+
+\newpage
+
+\hypertarget{methods}{%
+\section{Methods}\label{methods}}
+
+\hypertarget{lead-contact}{%
+\subsection{Lead contact}\label{lead-contact}}
+
+Further information and requests for resources should be directed to and
+will be fulfilled by the lead contact, Veith Weilnhammer
+(\href{mailto:veith.weilnhammer@gmail.com}{\nolinkurl{veith.weilnhammer@gmail.com}}).
+
+\hypertarget{materials-availability}{%
+\subsection{Materials availability}\label{materials-availability}}
+
+This study did not generate new unique reagents.
+
+\hypertarget{data-and-code-availability}{%
+\subsection{Data and code
+availability}\label{data-and-code-availability}}
+
+All custom code and behavioral data are available on
+\url{https://github.com/veithweilnhammer/Modes}. This manuscript was
+created using the \emph{R Markdown} framework, which integrates all
+data-related computations and the formatted text within one document.
+With this, we wish to make our approach fully transparent and
+reproducible for reviewers and future readers.
+
+\hypertarget{experimental-model-and-subject-details}{%
+\subsection{Experimental model and subject
+details}\label{experimental-model-and-subject-details}}
+
+\hypertarget{apparatus}{%
+\paragraph{Apparatus}\label{apparatus}}
+
+The participants viewed visual stimuli on a gamma-corrected CRT monitor
+(Sony Trinitron Multiscan G520, 1024x768 pixels, 100 Hz refresh rate,
+Konica Minolta LS-110 luminometer for gamma correction) at a viewing
+distance of 57.3 cm, with head stabilization provided by a chin rest.
+
+\hypertarget{stimuli-and-procedure}{%
+\subsubsection{Stimuli and Procedure}\label{stimuli-and-procedure}}
+
+All stimuli were presented using MATLAB (MathWorks, R2017a) and the
+Psychophysics Toolbox. In 44\% of the trials, we presented low-contrast
+near-to-vertical Gabor patches which were embedded in static white
+noise. In another 44\% of the trials, we presented only static white
+noise. The remaining 12\% of the trials featured a high-contrast Gabor
+patch (40\% Michelson contrast) embedded in white noise. This
+high-contrast inducer was introduce to boost the phenomenon of serial
+dependency. The inducers were oriented 10 degrees clockwise or
+counterclockwise relative to vertical, and presented in intervals
+randomized between 4 and 10 trials. Stimuli were displayed for 500 ms,
+with a maximum white noise contrast of 60\%. To reduce potential
+luminance aftereffects, the signal was masked by low-pass filtered
+luminance contrast noise (100\% contrast) for 500 ms, and the Gabor
+phase was randomized across trials.
+
+Visual stimuli measured 14 x 14 degrees of visual angle (d.v.a.), with
+Gabor patches confined to a Gaussian contrast envelope with a 3 d.v.a.
+standard deviation. The spatial frequency of the Gabor patches was 0.5
+cycles per degree (cpd), with orientation randomized within ±3 degrees
+relative to vertical for low-contrast gratings. High-contrast gratings
+were presented at ±10 degrees. Participants were tasked to judge the
+presence or absence of the near-vertical Gabor in the noisy image. We
+adjusted the signal contrast on a participant-by-participant basis to
+achieve a d' of approximately 1.5 using data from preliminary
+experiments. Each session consisted of 100 trials, with inter-trial
+intervals randomized between 800-1200 ms. Participants completed 15-25
+sessions in about 2 hours.
+
+The raw data were published in a previous report on serial dependencies
+in perception\textsuperscript{17}. The re-analysis presented here
+focuses on a different question (the perceptual and temporal quality of
+FAs as a proxy for hallucinations) and uses a different analytical
+approach (HMM-GLMs).
+
+\hypertarget{quantification-and-statistical-analysis}{%
+\subsubsection{Quantification and Statistical
+Analysis}\label{quantification-and-statistical-analysis}}
+
+Responses were categorized into one of four stimulus-response types:
+Hits (alarms on stimulus trials), correct rejections (rejections on
+no-stimulus trials), FAs (alarms on no-stimulus trials), and misses
+(rejections on stimulus trials). We employed standard logistic and
+linear regression using R-packages lmer, glmer, and afex (see
+Supplemental Table S1).
+
+\hypertarget{classification-images}{%
+\paragraph{Classification images}\label{classification-images}}
+
+Following previous approaches\textsuperscript{17}, we filtered each
+static white noise image with the Gaussian stimulus envelope, applied
+fast 2-D Fourier-transformation, and extracted the power at the Gabor
+patch's spatial frequency, separately for orientations from 0 to 180
+degrees in three degree intervals. For every image, we computed the
+average power between 60 to 120 degrees, relative to the overall power
+from complete orientation range. To visualize the classification images,
+we subtracted the average power-by-orientation at rejection trials from
+the average power-by-orientation at alarm trials. To examine serial
+dependence, the same analysis was conducted separately for trials
+following clockwise (CW) and counter-clockwise (CCW) inducers. In each
+condition and participant, we determined the average vector of the
+classification image by computing the centroid of a polygon composed of
+vector endpoints in polar coordinates.
+
+\hypertarget{hidden-markov-modeling}{%
+\paragraph{Hidden Markov Modeling}\label{hidden-markov-modeling}}
+
+We used General Linear Models (GLM) to predict the response \(y_t\) (0:
+rejection: 1: alarm) from the contrast at the current trial (\(s_t\):
+zero contrast, low contrast, high contrast) and the response at the
+preceding trial \(y_{t-1}\):
+
+\begin{equation}
+P(y_t = 1 | x_t) = \frac{1}{1 + e^{-x_t \times w}} 
+\end{equation}
+
+\begin{equation}
+x_t \times w =  s_t \times \beta_s + y_{t-1} \times \beta_H
+\end{equation}
+
+We then used Hidden Markov Models (HMMs, as implemented in the
+\emph{SSM: Bayesian learning and inference for state space models}
+python library, \url{https://github.com/lindermanlab/ssm}) to model
+transitions between two latent states \(k\) and \(j\). At each trial,
+the HMM predicted the latent state \(z_t\) was \(k\) or \(j\), with
+alternation between \(k\) and \(j\) that were governed by a 2 x 2
+transition matrix \(A\):
+
+Each latent state was linked to an independent GLM that predicted
+\(y_t\) from \(s_t\) and \(y_{t-1}\) based on the weights \(w_{j/k}\):
+
+\begin{equation}
+P(y_t = 1 | x_t, z_t) = \frac{1}{1 + e^{-x_t \times w_{k/j}}} 
+\end{equation}
+
+\begin{equation}
+x_t \times w_{k/j} =  s_t \times \beta_{s,k/j} + y_{t-1} \times \beta_{p,k/j} 
+\end{equation}
+
+For both states, parameters were initialized at the regression weights
+of a one-state control GLM. To compare the performance of the two-state
+GLM relative to the one-state control GLM, we computed the difference in
+Bayesian Information Criterion (BIC) between the two models. The SSM
+hyperparameters were defined as follows: \(\sigma^2\) = 10 (variance
+over the GLM weights \(w_{k/j}\), and \(\alpha\) = 1 (Dirichlet prior
+over the transition matrix \(A\)) was set to 1. The latent states \(k\)
+and \(j\) were linked to mode by comparing \(\beta_s\) and \(\beta_H\)
+(external mode: \(\beta_s\) \textgreater{} \(\beta_H\), internal mode:
+\(\beta_H\) \textgreater{} \(\beta_s\)). We labelled trial as external
+when \(P(z_t = external) = 1 - P(z_t = internal) > 0.5\).
+
+\newpage
+
+\hypertarget{figures}{%
+\section{Figures}\label{figures}}
+
+\hypertarget{figure-1}{%
+\subsection{Figure 1}\label{figure-1}}
+
+\includegraphics{./predictive_templates_files/figure-latex/Figure_1.png}
+
+\textbf{Figure 1.}
+
+\textbf{A. Paradigm.} Participants were instructed to report whether
+they perceived (close-to-) vertical gratings embedded in noise (left
+panel). At stimulus trials, gratings were presented either at low or at
+high contrast. At no-stimulus trials, no grating was presented (contrast
+= 0). We reasoned that alarms would be more frequent when participant
+expect to experience a signal, and when the sensory noise is compatible
+with the predicted signal
+((\(P(signal|noise) = P(signal) \times P(noise|signal)\), upper panel).
+We induced signal expectations \(P(signal)\) by presenting stimuli in
+sequence (right panel). We hypothesized that such a sequence would
+induce false alarms (FAs) via the phenomenon of serial dependence.
+Serial dependencies cause perception to be biased toward preceding
+experiences, causing alarms to be more likely to be followed by alarms,
+and rejections more likely to be followed by rejections. Since serial
+dependencies are known to be stronger after confident experiences, we
+predicted that FAs would be more frequent after high-contrast stimuli.
+In the example shown on the right, our hypothesis therefore predicts
+that FAs would me most likely at the 2nd and 7th trial.
+
+\textbf{B. Predictive perceptual templates.} To compute the
+compatibility of the white noise with the expected signal
+(\(P(noise|signal)\)), we subtracted the power-by-orientation
+distribution of the random white noise images at rejection trials (blue)
+from the power-by-orientation distribution of the random noise images at
+alarm trials (red). The right panel shows the power-by-orientation
+distributions of 20 example stimuli that occurred at alarm and rejection
+trials, respectively.
+
+\textbf{C. External and internal modes in perception.} Perception is
+known to slowly alternate between two opposing modes (left panel):
+During the external mode, perception is dominated by incoming stimuli,
+with weak serial dependencies between subsequent trials (grey arrows).
+By contrast, during the internal mode, perception is strongly biased by
+preceding experiences (strong serial dependencies, black arrows). The
+examples depicted within the circles illustrate the effect of external
+and internal mode on perception: In the external mode, perception
+dissociates from predictions that stem from serial dependencies, such
+that alarms (red) and rejections (blue) are equally likely to occur
+after high-contrast stimuli. In the internal mode, perception is
+strongly biased toward previous experiences, causing alarms (red) to be
+more frequent after high-contrast stimuli. Between-mode alternations can
+by discovered by Hidden Markov Models (HMM). HMMs describe alternations
+between two independent General Linear Models (GLMs), each of which
+predicts perceptual experiences \(y_t\) via weights assigned to the
+stimulus \(\beta_S \times s_t\) at the current trial, and the experience
+made at the preceding trial \(\beta_H \times y_{t-1}\). In this
+experiment, the GLM-HMM discovered an external mode (\(71.3\) ±
+\(3.5\)\% percent of trials), during which \(\beta_S\) is high while
+\(\beta_H\) is low (middle and right panels), and an internal mode
+(\(28.7\) ± \(3.5\)\% percent of trials), during which \(\beta_S\) is
+low while \(\beta_H\) is high.
+
+\newpage
+
+\hypertarget{figure-2}{%
+\subsection{Figure 2}\label{figure-2}}
+
+\includegraphics{predictive_templates_files/figure-latex/rev_Figure_2-1.pdf}
+
+\textbf{Figure 2. The effect of serial dependencies on alarms and
+rejections depend on mode.} The global alarm rate correlated positively
+with the contrast of stimuli presented at the preceding trial (\(0.11\)
+± \(0.03\), z = \(4.33\), p = \(\ensuremath{1.5\times 10^{-5}}\)). This
+suggests that serial dependencies contribute to FAs. When separating our
+data in episodes of external and internal modes, we found positive
+serial dependencies only during the internal mode (\(0.96\) ± \(0.06\),
+z = \(16.96\), p = \(\ensuremath{1.71\times 10^{-64}}\)). During the
+external mode, by contrast, we observed a negative correlation between
+alarm rate and preceding stimulus contrast (\(-0.19\) ± \(0.03\), z =
+\(-6.31\), p = \(\ensuremath{2.72\times 10^{-10}}\)).
+
+\newpage
+
+\hypertarget{figure-3}{%
+\subsection{Figure 3}\label{figure-3}}
+
+\includegraphics{predictive_templates_files/figure-latex/rev_Figure_3-1.pdf}
+
+\textbf{Figure 3. The effect of predictive templates on alarms and
+rejections depends on mode.} Globally, the classification images
+computed for alarms (power-by-orientation distribution at alarm trials
+relative to the power-by-orientation distribution at rejection trials)
+revealed a peak around 90°. This corresponds to the average orientation
+of the signal (\(0.1\) ± \(0.02\), T(\(\ensuremath{1.37\times 10^{4}}\))
+= \(7.24\), p = \(\ensuremath{4.84\times 10^{-13}}\)). During the
+internal mode, we found a shift of the close-to-vertical noise power
+peak toward the orientation of the preceding stimulus (\(19.87\) ±
+\(6.73\), T(\(20.28\)) = \(2.95\), p =
+\(\ensuremath{7.82\times 10^{-3}}\); clockwise tilt {[}CW{]} in green,
+counter-clockwise tilt {[}CCW{]} in orange; dots indicate position of
+the average vector). This shift was not observed during the external
+mode (\(-3.67\) ± \(6.27\), T(\(20.15\)) = \(-0.59\), p = \(0.56\)).
+
+\newpage
+
+\hypertarget{supplementary-information}{%
+\section{Supplementary Information}\label{supplementary-information}}
+
+\hypertarget{supplemental-figure-s1}{%
+\subsection{Supplemental Figure S1}\label{supplemental-figure-s1}}
+
+\includegraphics{predictive_templates_files/figure-latex/rev_Supplemental_Figure_S1-1.pdf}
+\textbf{Supplemental Figure S1.} We used Bayesian model comparison to
+evaluate whether the two-state HMM-GLM (number of parameters: 8)
+provided a more parsimonious explanation of our data in comparison to
+the one-state control model (number of parameters: 2). To compare the
+two models, we computed the difference in
+\(\text{BIC} = \log(N) \times k - 2 \times \log(L)\). Relative to the
+one-state GLM, the two-state HMM-GLM yielded a reduction in BIC by
+\(\delta_{BIC}\) = \(\ensuremath{-1.12\times 10^{3}}\) (red). We did not
+observe this reduction when we randomly shuffled the trials for a total
+of 100 iterations, and computed BICs for these randomly permuted data
+(average \(\delta_{BIC}\) = \(-323.8\); blue). As expected, shuffling
+did not have an effect on BIC in the one-state control GLM.
+
+\newpage
+
+\hypertarget{supplemental-figure-s2}{%
+\subsection{Supplemental Figure S2}\label{supplemental-figure-s2}}
+
+\includegraphics{predictive_templates_files/figure-latex/Supplemental_Figure_S2-1.pdf}
+
+\textbf{Supplemental Figure S2.} As an alternative explanation for
+external and internal modes, one may assume a response heuristic that
+uses the external sensory data when it is reliable (i.e., at
+high-contrast trials), and applies internal predictions when the
+external sensory data is not reliable (i.e., no-stimulus and
+low-contrast trials). The latter explanation would entail that the
+trial-wise probability of external mode depends exclusively on contrast.
+We found that the probability of the external mode was higher when the
+contrast at the current trial was high (\(0.19\) ± \(0.03\), z =
+\(7.58\), p = \(\ensuremath{3.51\times 10^{-14}}\)). Likewise, the
+external mode was more likely when the contrast of the stimulus
+presented at the preceding trial was high (\(0.22\) ± \(0.03\), z =
+\(8.5\), p = \(\ensuremath{1.82\times 10^{-17}}\)). This may suggest
+that stimuli with high signal-to-noise ratio make switches to the
+external mode more likely. However, the overall change in the
+probability of external mode was small, ranging form a minimum of
+\(69.12\)\% to a maximum of \(76.56\)\%. Moreover, the average interval
+between mode switches (\(59.1\) ± \(8.8\) trials) was almost eight times
+longer than the average interval between high-contrast stimuli (\(8.66\)
+± \(0.06\) trials). Our analyses therefore reveal a potential role of
+high signal-to-noise ratio for mode alternations. They are, however, not
+compatible with the view that external and internal modes reflect
+response strategies applied exclusively to stimuli at high and low
+signal-to-noise ratio, respectively.
+
+\newpage
+
+\hypertarget{supplemental-table-s1}{%
+\subsection{Supplemental Table S1}\label{supplemental-table-s1}}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3148}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.4537}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2315}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+RESOURCE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+SOURCE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+IDENTIFIER
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Deposited data \& code} & & \\
+Analyzed data \& custom code &
+\url{https://github.com/veithweilnhammer/predictive_templates/} & N/A \\
+\textbf{Software} & & \\
+\textbf{Python 3} & \url{http://www.python.org/} & RRID:SCR\_008394 \\
+Jupyter Notebook & \url{https://jupyter.org/} & RRID:SCR\_018315 \\
+numpy & \url{http://www.numpy.org} & RRID:SCR\_008633 \\
+pandas & \url{https://pandas.pydata.org} & RRID:SCR\_018214 \\
+SSM & \url{https://github.com/lindermanlab/ssm} & N/A \\
+\textbf{Matlab} & \url{https://www.mathworks.com/} & RRID:SCR\_001622 \\
+Psychtoolbox 3 & \url{http://psychtoolbox.org/} & RRID:SCR\_002881 \\
+\textbf{R} & \url{http://www.r-project.org/} & RRID:SCR\_001905 \\
+RStudio & \url{https://www.rstudio.com/} & RRID:SCR\_000432 \\
+lme4, afex, ggplot2, ggridges, gridExtra, tidyr, plyr &
+\url{http://cran.r-project.org/} & RRID:SCR\_003005 \\
+\end{longtable}
+
+\newpage
+
+\hypertarget{references}{%
+\section*{References}\label{references}}
+\addcontentsline{toc}{section}{References}
+
+\hypertarget{refs}{}
+\begin{CSLReferences}{0}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-Powers2017}{}}%
+\CSLLeftMargin{1. }%
+\CSLRightInline{Powers, A. R. \emph{et al.}
+\href{https://doi.org/10.1126/science.aan3458}{Pavlovian
+conditioning--induced hallucinations result from overweighting of
+perceptual priors}. \emph{Science} \textbf{357}, 596--600 (2017).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-stuke_overly_2021}{}}%
+\CSLLeftMargin{2. }%
+\CSLRightInline{Stuke, H. \emph{et al.}
+\href{https://doi.org/10.3389/fpsyg.2021.583637}{Overly {Strong}
+{Priors} for {Socially} {Meaningful} {Visual} {Signals} {Are} {Linked}
+to {Psychosis} {Proneness} in {Healthy} {Individuals}}. \emph{Frontiers
+in Psychology} \textbf{12}, (2021).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-kafadar_modeling_2020}{}}%
+\CSLLeftMargin{3. }%
+\CSLRightInline{Kafadar, E. \emph{et al.}
+\href{https://doi.org/10.1016/j.schres.2020.04.017}{Modeling perception
+and behavior in individuals at clinical high risk for psychosis:
+{Support} for the predictive processing framework}. \emph{Schizophrenia
+Research} \textbf{226}, 167--175 (2020).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-kafadar_conditioned_2022}{}}%
+\CSLLeftMargin{4. }%
+\CSLRightInline{Kafadar, E. \emph{et al.}
+\href{https://doi.org/10.1016/j.biopsych.2022.05.007}{Conditioned
+{Hallucinations} and {Prior} {Overweighting} {Are} {State}-{Sensitive}
+{Markers} of {Hallucination} {Susceptibility}}. \emph{Biological
+Psychiatry} \textbf{92}, 772--780 (2022).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-leptourgos_relating_2022}{}}%
+\CSLLeftMargin{5. }%
+\CSLRightInline{Leptourgos, P. \emph{et al.}
+\href{https://doi.org/10.1093/schbul/sbac006}{Relating {Glutamate},
+{Conditioned}, and {Clinical} {Hallucinations} via {1H}-{MR}
+{Spectroscopy}}. \emph{Schizophrenia Bulletin} \textbf{48}, 912--920
+(2022).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Horga2019}{}}%
+\CSLLeftMargin{6. }%
+\CSLRightInline{Horga, G. \emph{et al.}
+\href{https://doi.org/10.1038/s41583-019-0234-1}{An integrative
+framework for perceptual disturbances in psychosis}. \emph{Nature
+Reviews Neuroscience} \textbf{20}, 763--778 (2019).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-schmack_striatal_2021}{}}%
+\CSLLeftMargin{7. }%
+\CSLRightInline{Schmack, K. \emph{et al.}
+\href{https://doi.org/10.1126/science.abf4740}{Striatal dopamine
+mediates hallucination-like perception in mice}. \emph{Science (New
+York, N.Y.)} \textbf{372}, eabf4740 (2021).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Sterzer2018}{}}%
+\CSLLeftMargin{8. }%
+\CSLRightInline{Sterzer, P. \emph{et al.}
+\href{https://doi.org/10.1016/j.biopsych.2018.05.015}{The {Predictive}
+{Coding} {Account} of {Psychosis}}. \emph{Biological Psychiatry}
+\textbf{84}, 634--643 (2018).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Corlett2019}{}}%
+\CSLLeftMargin{9. }%
+\CSLRightInline{Corlett, P. R. \emph{et al.}
+\href{https://doi.org/10.1016/j.tics.2018.12.001}{Hallucinations and
+{Strong} {Priors}.} \emph{Tics} \textbf{23}, 114--127 (2019).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Howes2009}{}}%
+\CSLLeftMargin{10. }%
+\CSLRightInline{Howes, O. D. \emph{et al.}
+\href{https://doi.org/10.1093/schbul/sbp006}{The dopamine hypothesis of
+schizophrenia: {Version} {III} - {The} final common pathway}.
+\emph{Schizophrenia Bulletin} \textbf{35}, 549--562 (2009).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Corlett2016}{}}%
+\CSLLeftMargin{11. }%
+\CSLRightInline{Corlett, P. R. \emph{et al.}
+\href{https://doi.org/10.1177/0269881116650087}{Prediction error,
+ketamine and psychosis: {An} updated model}. \emph{Journal of
+Psychopharmacology} \textbf{30}, 1145--1155 (2016).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-toh_phenomenology_2020}{}}%
+\CSLLeftMargin{12. }%
+\CSLRightInline{Toh, W. L. \emph{et al.}
+\href{https://doi.org/10.1016/j.psychres.2020.113147}{On the
+phenomenology of auditory verbal hallucinations in affective and
+non-affective psychosis}. \emph{Psychiatry Research} \textbf{290},
+113147 (2020).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-lopez-silva_phenomenology_2022}{}}%
+\CSLLeftMargin{13. }%
+\CSLRightInline{López-Silva, P. \emph{et al.}
+\href{https://doi.org/10.3389/fpsyt.2022.826654}{The phenomenology of
+auditory verbal hallucinations in schizophrenia and the challenge from
+pseudohallucinations}. \emph{Frontiers in Psychiatry} \textbf{13},
+(2022).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-parnas_phenomenology_2024}{}}%
+\CSLLeftMargin{14. }%
+\CSLRightInline{Parnas, J. \emph{et al.}
+\href{https://doi.org/10.1016/j.schres.2023.03.045}{Phenomenology of
+auditory verbal hallucination in schizophrenia: {An} erroneous
+perception or something else?} \emph{Schizophrenia Research}
+\textbf{265}, 83--88 (2024).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-oorschot_temporal_2012}{}}%
+\CSLLeftMargin{15. }%
+\CSLRightInline{Oorschot, M. \emph{et al.}
+\href{https://doi.org/10.1016/j.schres.2012.06.010}{Temporal dynamics of
+visual and auditory hallucinations in psychosis}. \emph{Schizophrenia
+Research} \textbf{140}, 77--82 (2012).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-hermans_temporal_2020}{}}%
+\CSLLeftMargin{16. }%
+\CSLRightInline{Hermans, K. \emph{et al.}
+\href{https://doi.org/10.1016/j.psychres.2020.113039}{Temporal dynamics
+of suspiciousness and hallucinations in clinical high risk and first
+episode psychosis}. \emph{Psychiatry Research} \textbf{290}, 113039
+(2020).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-murai_serial_2021}{}}%
+\CSLLeftMargin{17. }%
+\CSLRightInline{Murai, Y. \emph{et al.}
+\href{https://doi.org/10.1016/j.cub.2021.05.006}{Serial dependence
+revealed in history-dependent perceptual templates}. \emph{Current
+biology: CB} \textbf{31}, 3185--3191.e3 (2021).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-weilnhammer_n-methyl-d-aspartate_2024}{}}%
+\CSLLeftMargin{18. }%
+\CSLRightInline{Weilnhammer, V. \emph{et al.} N-{Methyl}-{D}-aspartate
+receptor hypofunction causes recurrent and transient failures of
+perceptual inference. (2024)
+doi:\href{https://doi.org/10.1101/2024.05.24.595590}{10.1101/2024.05.24.595590}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-weilnhammer_bistable_2021}{}}%
+\CSLLeftMargin{19. }%
+\CSLRightInline{Weilnhammer, V. \emph{et al.}
+\href{https://doi.org/10.1016/j.isci.2021.102234}{Bistable perception
+alternates between internal and external modes of sensory processing}.
+\emph{iScience} \textbf{24}, 102234 (2021).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-weilnhammer_sensory_2023}{}}%
+\CSLLeftMargin{20. }%
+\CSLRightInline{Weilnhammer, V. \emph{et al.}
+\href{https://doi.org/10.1371/journal.pbio.3002410}{Sensory processing
+in humans and mice fluctuates between external and internal modes}.
+\emph{PLOS Biology} \textbf{21}, e3002410 (2023).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-manassi_continuity_2024}{}}%
+\CSLLeftMargin{21. }%
+\CSLRightInline{Manassi, M. \emph{et al.}
+\href{https://doi.org/10.1038/s44159-024-00297-x}{Continuity fields
+enhance visual perception through positive serial dependence}.
+\emph{Nature Reviews Psychology} \textbf{3}, 352--366 (2024).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-fischer_serial_2014}{}}%
+\CSLLeftMargin{22. }%
+\CSLRightInline{Fischer, J. \emph{et al.}
+\href{https://doi.org/10.1038/nn.3689}{Serial dependence in visual
+perception}. \emph{Nat. Neurosci.} \textbf{17}, 738--743 (2014).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-kiyonaga_serial_2017}{}}%
+\CSLLeftMargin{23. }%
+\CSLRightInline{Kiyonaga, A. \emph{et al.}
+\href{https://doi.org/10.1016/j.tics.2017.04.011}{Serial {Dependence}
+across {Perception}, {Attention}, and {Memory}}. \emph{Trends in
+Cognitive Sciences} \textbf{21}, 493--497 (2017).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-pascucci_serial_2023}{}}%
+\CSLLeftMargin{24. }%
+\CSLRightInline{Pascucci, D. \emph{et al.}
+\href{https://doi.org/10.1167/jov.23.1.9}{Serial dependence in visual
+perception: {A} review}. \emph{Journal of Vision} \textbf{23}, 9
+(2023).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-cicchini_serial_2024}{}}%
+\CSLLeftMargin{25. }%
+\CSLRightInline{Cicchini, G. M. \emph{et al.}
+\href{https://doi.org/10.1146/annurev-psych-021523-104939}{Serial
+{Dependence} in {Perception}}. \emph{Annual Review of Psychology}
+\textbf{75}, 129--154 (2024).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-manassi_serial_2023}{}}%
+\CSLLeftMargin{26. }%
+\CSLRightInline{Manassi, M. \emph{et al.}
+\href{https://doi.org/10.1167/jov.23.8.18}{Serial dependence in visual
+perception: {A} meta-analysis and review}. \emph{Journal of Vision}
+\textbf{23}, 18 (2023).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-cicchini_functional_2018}{}}%
+\CSLLeftMargin{27. }%
+\CSLRightInline{Cicchini, G. M. \emph{et al.}
+\href{https://doi.org/10.1098/rspb.2018.1722}{The functional role of
+serial dependence}. \emph{Proceedings. Biological Sciences}
+\textbf{285}, 20181722 (2018).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-ashwood_mice_2022}{}}%
+\CSLLeftMargin{28. }%
+\CSLRightInline{Ashwood, Z. C. \emph{et al.}
+\href{https://doi.org/10.1038/s41593-021-01007-z}{Mice alternate between
+discrete strategies during perceptual decision-making}. \emph{Nature
+Neuroscience} \textbf{25}, 201--212 (2022).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-eckert_cross-modality_2023}{}}%
+\CSLLeftMargin{29. }%
+\CSLRightInline{Eckert, A.-L. \emph{et al.}
+\href{https://doi.org/10.1093/schbul/sbac168}{Cross-{Modality}
+{Evidence} for {Reduced} {Choice} {History} {Biases} in
+{Psychosis}-{Prone} {Individuals}}. \emph{Schizophrenia Bulletin}
+\textbf{49}, 397--406 (2023).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Stein2020}{}}%
+\CSLLeftMargin{30. }%
+\CSLRightInline{Stein, H. \emph{et al.}
+\href{https://doi.org/10.1038/s41467-020-18033-3}{Reduced serial
+dependence suggests deficits in synaptic potentiation in anti-{NMDAR}
+encephalitis and schizophrenia}. \emph{Nature Communications}
+\textbf{11}, 1--11 (2020).}
+
+\end{CSLReferences}
+
+\end{document}

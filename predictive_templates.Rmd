@@ -10,18 +10,18 @@ header-includes:
 - \usepackage{booktabs}
 always_allow_html: yes
 output:
-  word_document: default
+  pdf_document:
+    fig_caption: yes
+    keep_tex: yes
+    latex_engine: xelatex
+    number_sections: yes
   html_document:
     fig_caption: yes
     force_captions: yes
     highlight: pygments
     number_sections: yes
     theme: cerulean
-  pdf_document:
-    fig_caption: yes
-    keep_tex: yes
-    latex_engine: xelatex
-    number_sections: yes
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -101,6 +101,9 @@ library(readxl)
 # } else {
 #   load("./Results/test.Rdata")
 # }
+
+# smallest_value = .Machine$double.xmin
+# replace p = \(0\) with p < \(\ensuremath{2.2\times 10^{-308}}\)
 ```
 
 ```{r plot_controls}
@@ -137,7 +140,7 @@ $^{2}$ Center for Information and Neural Networks, Osaka, Japan\
 
 Veith Weilnhammer, Helen Wills Neuroscience Institute, University of California Berkeley, USA, email: [veith.weilnhammer\@gmail.com](mailto:veith.weilnhammer@gmail.com){.email}\
 \
-<br/><br/> **Word Count**: X words (main text without methods)\
+<br/><br/> **Word Count**: 2242 words (main text without methods)\
 <br/><br/> 
 
 \newpage
@@ -145,17 +148,19 @@ Veith Weilnhammer, Helen Wills Neuroscience Institute, University of California 
 
 # Summary
 
-False alarms occur when participants report a signal that was, in fact, never presented. False alarms share this feature with hallucinations, which reflect perceptual experiences that unfold in the absence of an external cause. However, to be useful as an experimental proxy for hallucinations, false alarms must meet at least two additional criteria: First, false alarms should not only represent erroneous reports of a signal, but represent perceptual states that are characterized by specific contents. Second, false alarms should occur on a timescale compatible with the temporal dynamics of hallucinations. In this work, we combined a classification image approach with Hidden Markov Models to show that false alarms can match the perceptual and temporal characteristics of hallucinations. We asked healthy human participants to discriminate difficult-to-detect visual stimuli from noise, and found that false alarms were more likely to occur during an internal mode of sensory processing, a minute-long state of the brain during which the content of perception is strongly biased toward previous experiences. Our findings suggest that hallucinations are driven by dynamic predictive templates that transform noise into transient, recurring, coherent, and meaningful perceptual experiences.
+False alarms occur when participants report a signal that was not presented. Hallucinations reflect perceptual experiences that unfold in the absence of an external cause. To serve as an experimental proxy for hallucinations, false alarms must meet two criteria: First, false alarms should not only reflect erroneous reports of a signal, but represent perceptual states that are characterized by specific contents. Second, false alarms should occur on a timescale compatible with the temporal dynamics of hallucinations. In this work, we combined a classification image approach with Hidden Markov Models to show that false alarms can match the perceptual and temporal characteristics of hallucinations. We asked healthy human participants to discriminate difficult-to-detect visual stimuli from noise, and found that false alarms were more likely to occur during an internal mode of sensory processing, a minute-long state of the brain during which the content of perception is strongly biased toward previous experiences. Our results suggest that hallucinations are driven by dynamic predictive templates that transform noise into transient, recurring, coherent, and meaningful perceptual experiences.
 
 # Results
 
 Hallucinations are vivid and transient experiences of objects, such as images or sounds, that occur in the absence of a corresponding stimulus[@Powers2017; @stuke_overly_2021; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022; @Horga2019; @schmack_striatal_2021]. These phenomena occur across a wide spectrum of neuropsychiatric disorders, but are particularly characteristic of schizophrenia, a severe and chronic mental health condition typically associated with repeated episodes of psychosis[@Sterzer2018; @Horga2019; @Corlett2019]. 
 
-To better understand the computational and neural mechanisms of hallucinations, cognitive neuroscience has primarily focused on experiments that induce false alarms (FA) in healthy participants[@Powers2017; @stuke_overly_2021; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022; @schmack_striatal_2021], psychosis prone individuals[@Powers2017; @kafadar_modeling_2020; @kafadar_conditioned_2022], and patients diagnosed with schizophrenia[@leptourgos_relating_2022]. FAs occur when participants make decisions about difficult-to-detect stimuli, and report the presence of a signal that was, in fact, not presented. Previous studies have shown that FA become more likely when people *expect* the presence of a stimulus. In line with this idea, FAs can be induced via cross-modal conditioning[@Powers2017; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022] or manipulations of signal probability[@schmack_striatal_2021]. A number of empirical findings indicate that FAs may provide a window into the neural mechanisms of hallucinations: FAs are more frequent in hallucination-prone individuals[@Powers2017; @stuke_overly_2021; @kafadar_modeling_2020; @kafadar_conditioned_2022; @schmack_striatal_2021] and patients diagnosed with schizophrenia[@leptourgos_relating_2022]. Moreover, they can be triggered by dopamine[@schmack_striatal_2021], an established molecular endophenotype of schizophrenia[@Howes2009], as well as by ketamine[@schmack_striatal_2021], a NMDA-receptor antagonist that elicits psychotic symptoms[@Corlett2016].
+To better understand the computational and neural mechanisms of hallucinations, cognitive neuroscience has primarily focused on experiments that induce false alarms (FA) in healthy participants[@Powers2017; @stuke_overly_2021; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022; @schmack_striatal_2021], psychosis prone individuals[@Powers2017; @kafadar_modeling_2020; @kafadar_conditioned_2022], and patients diagnosed with schizophrenia[@leptourgos_relating_2022]. FAs occur when participants make decisions about difficult-to-detect stimuli, and report the presence of a signal that was, in fact, not presented. 
 
-However, one of the most important limitations in the current state-of-the art is that FAs are, at heart, reports. What remains to be established is whether FAs are accompanied by perceptual experiences. Even though hallucinations have varying phenomenological properties across the disorders in which they occur, and may reflect unstructured noise-like percepts in particular at early stages of psychotic illness, they are typically associated with specific perceptual contents that have meaning to the afflicted individual[@toh_phenomenology_2020; @lopez-silva_phenomenology_2022; @parnas_phenomenology_2024]. Moreover, the focus on behavioral reports has lead previous studies to investigate FAs either as isolated events that occur at individual trials of a signal detection experiment, and/or in terms of their overall frequency in relation to an experimental intervention[@Powers2017; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022; @schmack_striatal_2021], trait[@Powers2017; @stuke_overly_2021; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022; @stuke_overly_2021; @schmack_striatal_2021] or diagnosis[@leptourgos_relating_2022]. Hallucinations, by contrast, are neither momentary nor constant, but typically unfold as coherent and transient experiences over the course of seconds, minutes or hours[@oorschot_temporal_2012; @hermans_temporal_2020]. 
+Previous studies have shown that FA become more likely when people *expect* the presence of a stimulus. In line with this idea, FAs can be induced via cross-modal conditioning[@Powers2017; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022] and manipulations of signal probability[@schmack_striatal_2021]. A number of empirical findings indicate that such conditioned FAs may provide a window into the neural mechanisms of hallucinations: Conditioned FAs are more frequent in hallucination-prone individuals[@Powers2017; @stuke_overly_2021; @kafadar_modeling_2020; @kafadar_conditioned_2022; @schmack_striatal_2021] and patients diagnosed with schizophrenia[@leptourgos_relating_2022]. Moreover, they can be triggered by dopamine[@schmack_striatal_2021], an established molecular endophenotype of schizophrenia[@Howes2009], as well as by ketamine[@schmack_striatal_2021], a NMDA-receptor antagonist that elicits psychotic symptoms[@Corlett2016].
 
-Here, we present a novel paradigm that can help to determine whether FA share the perceptual and temporal characteristics of hallucinations. First, we use a classification image approach[@murai_serial_2021] to show that FAs cannot be reduced to behavioral reports, but occur when the external sensory input matches the features of an internal predictive template that is defined by a specific perceptual content (criterion 1). Second, we apply Hidden Markov Models[@weilnhammer_n-methyl-d-aspartate_2024] (HMMs) to show that FA, and the underlying predictive templates, are linked to recurring minute-long intervals of internal mode processing, a state of the brain during which the content of perception is strongly biased toward previous experiences (criterion 2). 
+However, one of the most important limitations in the current state-of-the art is that FAs are, at heart, reports. What remains to be established is whether FAs are accompanied by perceptual experiences. Even though hallucinations have varying phenomenological properties across the disorders in which they occur, and may reflect unstructured noise-like percepts, particularly at early stages of psychotic illness, they are typically associated with specific perceptual contents that have meaning to the afflicted individual[@toh_phenomenology_2020; @lopez-silva_phenomenology_2022; @parnas_phenomenology_2024]. Moreover, the focus on behavioral reports has led previous studies to investigate FAs at the level of individual stimulus presentations within signal detection experiments[@Powers2017; @schmack_striatal_2021]. This assumes that the underlying mechanisms are isolated events that depend, at least in part, on an experimental intervention[@Powers2017; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022; @schmack_striatal_2021], trait[@Powers2017; @stuke_overly_2021; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022; @schmack_striatal_2021] or diagnosis[@leptourgos_relating_2022]. Hallucinations, by contrast, are neither momentary nor constant, but typically unfold as coherent and transient experiences over the course of seconds, minutes or hours[@oorschot_temporal_2012; @hermans_temporal_2020]. 
+
+Here, we present a novel paradigm that can help to determine whether FAs share the perceptual and temporal characteristics of hallucinations. First, we use a classification image approach[@murai_serial_2021] to show that FAs cannot be reduced to behavioral reports, but occur when the external sensory input matches the features of an internal predictive template that is defined by a specific perceptual content (criterion 1). Second, we apply Hidden Markov Models[@weilnhammer_n-methyl-d-aspartate_2024] (HMMs) to show that FA, and the underlying predictive templates, are linked to recurring minute-long intervals of internal mode processing, a state of the brain during which the content of perception is strongly biased toward previous experiences (criterion 2). 
 
 ## Criterion 1: The perceptual quality of FAs
 
@@ -324,11 +329,11 @@ STAT.mode_FA = summary(mode_FA)
 
 ```
 
-According to Bayes theorem, alarms ($P(signal|input)$) become likely when people expect to see a signal ($P(signal)$, prior), and when the features of a noisy input are compatible with the expected signal ($P(input|signal)$, likelihood). In natural environments, where the recent past is a predictor of the near future, previous stimuli may induce expectations about what is likely to be perceived next[@weilnhammer_bistable_2021; @weilnhammer_sensory_2023]. This generate predictive templates[@manassi_continuity_2024] that integrate experiences over time[@manassi_continuity_2024] ($P(signal|input) = P(signal) \times P(input|signal)$), giving rise to the phenomenon of perceptual serial dependence[@fischer_serial_2014; @kiyonaga_serial_2017; @pascucci_serial_2023; @cicchini_serial_2024; @manassi_serial_2023].
+According to Bayes theorem, alarms ($P(signal|input)$) become likely when people expect to see a signal ($P(signal)$, prior), and when the features of a noisy input are compatible with the expected signal ($P(input|signal)$, likelihood). In natural environments, where the recent past is a predictor of the near future, previous stimuli may induce expectations about what is likely to be perceived next[@weilnhammer_bistable_2021; @weilnhammer_sensory_2023]. This generates predictive templates that integrate experiences over time[@manassi_continuity_2024] ($P(signal|input) = P(signal) \times P(input|signal)$), giving rise to the phenomenon of perceptual serial dependence[@fischer_serial_2014; @kiyonaga_serial_2017; @pascucci_serial_2023; @cicchini_serial_2024; @manassi_serial_2023].
 
-Predictive templates may improve the interpretation of noisy but predictable sensory inputs[@cicchini_functional_2018; @manassi_continuity_2024] ($P(signal|input) = P(signal) \times P(input|signal)$). When overly strong, however, predictive templates lose their adaptive function and may cause people to experience spurious signals in noise ($P(signal|noise)$). With respect to the study of hallucinations, the critical question is whether FAs are driven solely by signal expectations ($P(signal)$, prior), in which case they may just be behavioral responses without any perceptual quality, or if they also depend on the compatibility of the noise with the expected signal ($P(noise|signal)$, likelihood). The latter case would indicate that FAs are accompanied by perceptual experiences with a specific content. 
+Predictive templates may improve the interpretation of noisy but predictable sensory inputs[@cicchini_functional_2018; @manassi_continuity_2024]. When overly strong, however, predictive templates lose their adaptive function and may cause people to experience spurious signals in noise ($P(signal|noise)$). With respect to the study of hallucinations, the critical question is whether FAs are driven solely by signal expectations ($P(signal)$, prior), in which case they may just be behavioral responses without any perceptual quality, or if they also depend on the compatibility of the noise with the expected signal ($P(noise|signal)$, likelihood). The latter case would indicate that FAs are accompanied by perceptual experiences with a specific content. 
 
-To test the contribution of prior and likelihood to FAs, we analyzed data from `r length(unique(Data$ID))` participants who judged whether close-to vertical gratings (targets) were present (alarms) or absent (rejections) in white noise image (Figure 1A). The alarm rate depended on three factors: the contrast of the target at the current trial ($`r STAT.alarm_resp_contr$coefficients[2,1]`$ ± $`r STAT.alarm_resp_contr$coefficients[2,2]`$, z = $`r STAT.alarm_resp_contr$coefficients[2,3]`$, p = $`r STAT.alarm_resp_contr$coefficients[2,4]`$), the contrast of the target at the preceding trial ($`r STAT.alarm_resp_contr$coefficients[4,1]`$ ± $`r STAT.alarm_resp_contr$coefficients[4,2]`$, z = $`r STAT.alarm_resp_contr$coefficients[4,3]`$, p = $`r STAT.alarm_resp_contr$coefficients[4,4]`$, Figure 2), and the relative power of the current noise image at close-to-vertical orientations (60 to 120 degrees), relative to the total power over all orientations ($`r STAT.alarm_resp_contr$coefficients[6,1]`$ ± $`r STAT.alarm_resp_contr$coefficients[6,2]`$, z = $`r STAT.alarm_resp_contr$coefficients[6,3]`$, p = $`r STAT.alarm_resp_contr$coefficients[6,4]`$, Figure 1B).
+To test the contribution of prior and likelihood to FAs, we analyzed data from `r length(unique(Data$ID))` participants who judged whether close-to vertical gratings (signals) were present (alarms) or absent (rejections) in white noise image (Figure 1A). The alarm rate depended on three factors: the contrast of the signal at the current trial ($`r STAT.alarm_resp_contr$coefficients[2,1]`$ ± $`r STAT.alarm_resp_contr$coefficients[2,2]`$, z = $`r STAT.alarm_resp_contr$coefficients[2,3]`$, p = $`r STAT.alarm_resp_contr$coefficients[2,4]`$), the contrast of the signal at the preceding trial ($`r STAT.alarm_resp_contr$coefficients[4,1]`$ ± $`r STAT.alarm_resp_contr$coefficients[4,2]`$, z = $`r STAT.alarm_resp_contr$coefficients[4,3]`$, p = $`r STAT.alarm_resp_contr$coefficients[4,4]`$, Figure 2), and the relative power of the current noise image at close-to-vertical orientations (60 to 120 degrees), relative to the total power over all orientations ($`r STAT.alarm_resp_contr$coefficients[6,1]`$ ± $`r STAT.alarm_resp_contr$coefficients[6,2]`$, z = $`r STAT.alarm_resp_contr$coefficients[6,3]`$, p = $`r STAT.alarm_resp_contr$coefficients[6,4]`$, Figure 1B).
 
 ```{r classification_images}
 ##
@@ -441,9 +446,11 @@ STAT.vector_external = summary(lmer(mean_orientation ~ previous_direction + (1 |
 STAT.vector_global = summary(lmer(mean_orientation ~ previous_direction + (1 | ID), data = mean_vectors_ID[mean_vectors_ID$Mode == "global",]))
 ```
 
-This confirms that FAs were driven by predictive templates: FAs were more likely when the stimulus presented at the preceding trial induced a strong signal expectation ($P(signal)$), and when the sensory noise at the current trial matched the features of the expected signal ($P(noise|signal)$). To visualize these predictive templates, we subtracted the noise power at rejection trials from the noise power at alarm trials (Figure 3). The resulting classification images[@murai_serial_2021] revealed a noise power peak at close-to-vertical-orientations ($`r STAT.mode_FA$coefficients[2,1]`$ ± $`r STAT.mode_FA$coefficients[2,2]`$, T($`r STAT.template_alarm$coefficients[2,3]`$) = $`r STAT.template_alarm$coefficients[2,4]`$, p = $`r STAT.template_alarm$coefficients[2,5]`$) that matched the average orientation of the signals. If FA were simply lapses or biases in response behavior, one would expect a flat classification image that mirrors the overall flat power-by-orientation distribution in the white noise stimuli used in our experiment. This was clearly not the case: FAs occurred more frequently at noise stimuli that matched a feature of the signal (high power at close-to-vertical orientations). Critically, observers learned the features fo the average signal from the sequence of experiences throughout the experiment. 
+This confirms that FAs were driven by predictive templates: FAs were more likely when the stimulus presented at the preceding trial induced a strong signal expectation ($P(signal)$), and when the sensory noise at the current trial matched the features of the expected signal ($P(noise|signal)$). To visualize these predictive templates, we subtracted the noise power at rejection trials from the noise power at alarm trials (Figure 3). The resulting classification images[@murai_serial_2021] revealed a noise power peak at close-to-vertical-orientations ($`r STAT.mode_FA$coefficients[2,1]`$ ± $`r STAT.mode_FA$coefficients[2,2]`$, T($`r STAT.template_alarm$coefficients[2,3]`$) = $`r STAT.template_alarm$coefficients[2,4]`$, p = $`r STAT.template_alarm$coefficients[2,5]`$) that matched the average orientation of the signals. 
 
-Our findings therefore support criterion 1: at the time of FAs, observers perceived a specific content - in this case, gratings with a close-to-vertical orientation. The hallucinated content was determined by predictive templates that are generated by the sequence of preceding experiences[@fischer_serial_2014; @kiyonaga_serial_2017;@pascucci_serial_2023; @cicchini_serial_2024; @manassi_serial_2023; @manassi_continuity_2024] ($P(signal|noise) = P(signal) \times P(noise|signal)$).
+If FAs were simply lapses or biases in response behavior, one would expect a flat classification image that mirrors the overall flat power-by-orientation distribution in the white noise stimuli used in our experiment. This was clearly not the case: FAs occurred more frequently at noise stimuli that matched a feature of the signal (high power at close-to-vertical orientations; Figure 3). Critically, observers learned the features of the average signal from the sequence of experiences they made throughout the experiment. 
+
+Our findings therefore support criterion 1: at the time of FAs, observers perceived specific contents - in this case, gratings with a close-to-vertical orientation. The hallucinated content was determined by predictive templates that are generated by the sequence of preceding experiences[@fischer_serial_2014; @kiyonaga_serial_2017;@pascucci_serial_2023; @cicchini_serial_2024; @manassi_serial_2023; @manassi_continuity_2024] ($P(signal|noise) = P(signal) \times P(noise|signal)$).
 
 ```{r general_mode}
 ##
@@ -501,7 +508,7 @@ p_Mode_versus_contrast <-ggplot(data = Group_Data_Mode_versus_contrast,
   size = line_size_gd,
   alpha = alpha_gd
   ) + 
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
   x = "Contrast",
   y = "Probability of external mode",
   subtitle = "D"
@@ -562,33 +569,35 @@ Group_BIC <-
 
 ## Criterion 2: The temporal dynamics of predictive templates
 
-Hallucinations are transient, coherent, an often meaningful experiences that unfold over time. A valid experimental proxy for hallucinations should therefore fluctuate at a timescale compatible with the duration of hallucinatory experiences. In the case of FAs, this means that the underlying predictive templates should be dynamic, and generate recurrent and transient intervals during which perception is strongly biased toward previous experiences. 
+Hallucinations are transient, coherent, an often-meaningful experiences that unfold over time[@oorschot_temporal_2012; @hermans_temporal_2020; @toh_phenomenology_2020; @lopez-silva_phenomenology_2022; @parnas_phenomenology_2024]. A valid experimental proxy for hallucinations should therefore fluctuate at a timescale compatible with the duration of hallucinatory experiences. In the case of FAs, this means that the underlying predictive templates should be dynamic, and generate recurrent and transient intervals during which perception is strongly biased toward previous experiences. 
 
-To assess the temporal dynamics of the predictive templates, we estimated HMMs that inferred transitions between two latent states, each state linked to a logistic regression model that predicted trial-wises responses $y_t$ (alarms versus rejections) from the signal contrast at the current trial ($\beta_s \times s_t$) and the response at the preceding trial ($\beta_H \times y_t$, Figure 1C). In line with previous results[@weilnhammer_sensory_2023; @weilnhammer_n-methyl-d-aspartate_2024], the HMMs revealed slow alternations between an external mode, where perception closely followed external stimulus ($\beta_S > \beta_H$), and an internal mode, where perception was strongly biased by preceding experiences ($\beta_H$ \> $\beta_S$). 
+To assess the temporal dynamics of the predictive templates, we estimated HMMs that inferred transitions between two latent states, each linked to a General Linear Model (GLM) that predicted trial-wise responses $y_t$ (alarms versus rejections) from the signal contrast at the current trial ($\beta_s \times s_t$) and the response at the preceding trial ($\beta_H \times y_{t-1}$, Figure 1C). In line with previous results[@weilnhammer_sensory_2023; @weilnhammer_n-methyl-d-aspartate_2024], the HMMs revealed slow alternations between an external mode, where perception closely followed external stimulus ($\beta_S > \beta_H$), and an internal mode, where perception was strongly biased by preceding experiences ($\beta_S$ \< $\beta_H$, Figure 1C). 
 
-Bayesian model comparison indicated that the two-state GLM provided a more parsimonious description of the data than the one-state control model (reduction in BIC: $\delta_{BIC}$ =  $`r Group_BIC[Group_BIC$num_states == 2 & Group_BIC$type == "original",]$mean - Group_BIC[Group_BIC$num_states == 1 & Group_BIC$type == "original",]$mean`$; see Supplemental Figure SX1 for control analyses on randomly permuted data, for which the advantage of the two-state GLM was lost).
+Bayesian model comparison indicated that the two-state GLM provided a more parsimonious description of the data than the one-state control model (reduction in BIC: $\delta_{BIC}$ =  $`r Group_BIC[Group_BIC$num_states == 2 & Group_BIC$type == "original",]$mean - Group_BIC[Group_BIC$num_states == 1 & Group_BIC$type == "original",]$mean`$; see Supplemental Figure S1 for control analyses on randomly permuted data, for which the advantage of the two-state GLM was lost).
 
-Participants spent $`r mean(Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE)`$ ±  $`r (sd(Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE))/sqrt(length(Summary_Data_Mode_Prevalence_ID$P_int))`$%  of their time in internal mode, with alternation between modes occurring in intervals of  $`r mean(average_intervals_df$interval, na.rm = TRUE)`$ ± $`r (sd(average_intervals_df$interval, na.rm = TRUE))/sqrt(length(average_intervals_df$interval))`$ trials, corresponding to $`r 2*mean(average_intervals_df$interval, na.rm = TRUE)`$ ±  $`r 2*(sd(average_intervals_df$interval, na.rm = TRUE))/sqrt(length(average_intervals_df$interval))`$ sec. The logistic regression models that defined the external and internal mode were independent from the type of the response (alarm versus rejection), the signal orientations, and the power-by-orientation distribution of individual noise stimuli. Any between-mode difference in the FA rate and the associated classification images was therefore indicative of dynamic changes in the underlying predictive templates.
+Participants spent $`r mean(Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE)`$ ±  $`r (sd(Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE))/sqrt(length(Summary_Data_Mode_Prevalence_ID$P_int))`$%  of their time in internal mode, with alternation between modes occurring in intervals of  $`r mean(average_intervals_df$interval, na.rm = TRUE)`$ ± $`r (sd(average_intervals_df$interval, na.rm = TRUE))/sqrt(length(average_intervals_df$interval))`$ trials, corresponding to $`r 2*mean(average_intervals_df$interval, na.rm = TRUE)`$ ±  $`r 2*(sd(average_intervals_df$interval, na.rm = TRUE))/sqrt(length(average_intervals_df$interval))`$ sec. External and internal mode fluctuated spontaneously, and were only marginally modulated by contrast of the signal grating (Supplemental Figure S2). The GLMs that defined the external and internal mode were independent from the orientation of the signal, the contrast of the signal at the preceding trial, and the power-by-orientation distribution of the noise. Any between-mode difference in the classification images was therefore indicative of dynamic changes in the underlying predictive templates. 
 
 We found that the internal mode increased the rate of FAs relative to external mode ($`r STAT.mode_FA$coefficients[2,1]`$ ± $`r STAT.mode_FA$coefficients[2,2]`$, T($`r STAT.mode_FA$coefficients[2,3]`$) = $`r STAT.mode_FA$coefficients[2,4]`$, p = $`r STAT.mode_FA$coefficients[2,5]`$, Figure 2). 
 In the internal mode, perception depended more on the contrast of the stimulus presented at the preceding trial  ($`r STAT.full_alarm_resp_contr$coefficients[10,1]`$ ± $`r STAT.full_alarm_resp_contr$coefficients[10,2]`$, z = $`r STAT.full_alarm_resp_contr$coefficients[10,3]`$, p = $`r STAT.full_alarm_resp_contr$coefficients[10,4]`$) and less on contrast of the stimulus presented at the current trial ($`r STAT.full_alarm_resp_contr$coefficients[8,1]`$ ± $`r STAT.full_alarm_resp_contr$coefficients[8,2]`$, z = $`r STAT.full_alarm_resp_contr$coefficients[8,3]`$, p = $`r STAT.full_alarm_resp_contr$coefficients[8,4]`$). The effect of signal expectations ($P(signal)$) on perception were thus exaggerated during the internal mode.
 
 Alarms during the internal mode were associated with a close-to-vertical noise-power-peak that was shifted toward the orientation of the stimulus presented at the preceding trial ($`r STAT.vector_internal$coefficients[2,1]`$ ± $`r STAT.vector_internal$coefficients[2,2]`$, T($`r STAT.vector_internal$coefficients[2,3]`$) = $`r STAT.vector_internal$coefficients[2,4]`$, p = $`r STAT.vector_internal$coefficients[2,5]`$, Figure 3). 
-This shift was not observed during the external mode ($`r STAT.vector_external$coefficients[2,1]`$ ± $`r STAT.vector_external$coefficients[2,2]`$, T($`r STAT.vector_external$coefficients[2,3]`$) = $`r STAT.vector_external$coefficients[2,4]`$, p = $`r STAT.vector_external$coefficients[2,5]`$). This suggests that the predictive templates, and the associated bias in the content of perception toward previous experiences, was particularly strong during the internal mode.
+This shift was not observed during the external mode ($`r STAT.vector_external$coefficients[2,1]`$ ± $`r STAT.vector_external$coefficients[2,2]`$, T($`r STAT.vector_external$coefficients[2,3]`$) = $`r STAT.vector_external$coefficients[2,4]`$, p = $`r STAT.vector_external$coefficients[2,5]`$). This suggests that the predictive templates, and the associated bias in the content of perception toward previous experiences, were particularly strong during the internal mode.
 
-Our findings therefore confirmed criterion 2: the predictive templates that drive FAs are dynamic and fluctuate according to two opposing external and internal modes of perception. Alternations between modes occurred at the order of minutes, and were thus compatible with temporal duration of hallucinations. During the internal mode, FAs were associated with hallucinated contents that were skewed toward previous experiences. 
+Our findings therefore confirmed criterion 2: the predictive templates that drive FAs are dynamic and fluctuate according to two opposing external and internal modes of perception. Alternations between modes occurred at the order of minutes, and were thus compatible with the temporal duration of hallucinations. During the internal mode, FAs were associated with hallucinated contents that were skewed toward previous experiences. 
 
 # Discussion
 
-In sum, our results indicate that the FAs observed in our study are perceptual phenomena, characterized by specific contents, and driven by dynamic predictive templates that fluctuate in intervals of several minutes. This confirms that FAs induced by signal-detection experiments can match the perceptual[@toh_phenomenology_2020; @toh_phenomenology_2020; @lopez-silva_phenomenology_2022; @parnas_phenomenology_2024] and temporal[@oorschot_temporal_2012; @hermans_temporal_2020] quality of hallucinations. 
+Our results indicate that the FAs observed here are dynamic perceptual phenomena, which are characterized by specific content and are driven by dynamic predictive templates. These templates fluctuate in intervals of several minutes and are particularly strong during internal modes of sensory processing. This confirms that FAs induced by signal-detection experiments can match the perceptual[@toh_phenomenology_2020; @lopez-silva_phenomenology_2022; @parnas_phenomenology_2024] and temporal[@oorschot_temporal_2012; @hermans_temporal_2020] quality of hallucinations. 
 
-Our results indicate that FAs, and potentially hallucinations, are linked to alternations between external and internal modes of perception. External and internal modes have repeatedly been observed in mice[@ashwood_mice_2022; @weilnhammer_sensory_2023], healthy human participants[@weilnhammer_sensory_2023], and patients diagnosed with schizophrenia[@weilnhammer_n-methyl-d-aspartate_2024]. We found that the internal mode did not only increase the rate of FAs, but also the extent to which the content perceived at the time of FAs was skewed toward previous experiences. This finding points to a tentative mechanism for how hallucinations emerge, persist, and end: During the internal mode, a hallucination may emerge as a FA that occurs when a specific context induces signal expectations (e.g., hearing the neighbors voice in one's apartment, $P(signal)$) which coincide with a sensory input that is compatible with the average features of the expected signal (e.g., construction noise that matches the features of human speech, $P(input|signal)$). The internal mode enhances the effect of preceding experiences on perception and may allow a specific hallucinated content to persist over time as a coherent experience. A transition from internal to external mode greatly reduces the strength of the predictive template in which the hallucination unfolds, ultimately causing the end of the experience. Future research could test this hypothesis by testing whether FAs, and ultimately hallucinations experienced by people living with psychotic symptoms, can be mitigated by interventions that disrupt the internal mode.
+Our findings suggest that FAs, and potentially hallucinations, are linked to alternations between external and internal modes of perception. External and internal modes have repeatedly been observed in mice[@ashwood_mice_2022; @weilnhammer_sensory_2023], healthy human participants[@weilnhammer_sensory_2023], and patients diagnosed with schizophrenia[@weilnhammer_n-methyl-d-aspartate_2024]. We found that the internal mode not only increased the rate of FAs, but also enhanced the extent to which the content perceived at the time of FAs was skewed toward previous experiences. 
 
-During the internal mode, the average of the classification vectors were displaced by $`r mean(abs(mean_vectors_ID[mean_vectors_ID$Mode == "internal",]$mean_orientation - 90), na.rm = TRUE)`$ ± $`r sd(abs(mean_vectors_ID[mean_vectors_ID$Mode == "internal",]$mean_orientation - 90), na.rm = TRUE)/sqrt(length(mean_vectors_ID[mean_vectors_ID$Mode == "internal",]$mean_orientation)/2) degrees from vertical (Figure 3). The direction of the vectors depended on the predictive template, i.e., orientation of the stimulus presented at the preceding trial. Interestingly, the displacement of the classification vectors from vertical was larger than the orientation of the high-contrast gratings (-10 and 10 degrees from vertical, Figure 1A), which were most effective at inducing FAs during the internal mode (Figure 2). Since the high-contrast gratings stood out from the stimulus both in terms of contrast and orientation (low contrast gratings were presented at orientation ranging from -3 to 3, Figure 1A-B), one may suspect that the perceived orientation of the high-contrast grating exceeded their veridical orientation. An alternative explanation may be that FAs experiences exaggerated the features of the inducer, just as hallucinations often portray exaggerated version of everyday stimuli (such as hallucinated speech that stands out in terms of tone, pitch, or extreme contents).
+This finding points to a tentative mechanism for how hallucinations emerge, persist, and end: During the internal mode, a hallucination may emerge as a FA that occurs when (i), a specific context induces signal expectations (e.g., hearing the neighbors voice in one's apartment, $P(signal)$) and (ii), the sensory input is compatible with the average features of the expected signal (e.g., construction noise that matches the features of human speech, $P(input|signal)$). The internal mode enhances the effect of preceding experiences on perception and may allow the hallucinated content to persist over time as a coherent experience. A transition from internal to external mode greatly reduces the strength of the predictive template in which the hallucination unfolds, ultimately causing the end of the experience. Future research could test this hypothesis by testing whether FAs, and ultimately the hallucinations experienced by people living with psychotic symptoms, can be mitigated by interventions that disrupt the internal mode.
 
-Our findings suggests a key role of serial dependence[@fischer_serial_2014; @kiyonaga_serial_2017;@pascucci_serial_2023; @cicchini_serial_2024] and predictive templates[@manassi_serial_2023] for how hallucinations emerge and persist over time. They overlap with the so-called strong prior account of schizophrenia[@Corlett2019], where psychotic symptoms, and in particular hallucinations, are thought to occur due to an exaggerated effect of prior knowledge on perception[@Powers2017; @stuke_overly_2021; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022; @schmack_striatal_2021]. At the same time, they seem at odds with the observation that serial dependencies are reduced in psychosis prone individuals[@eckert_cross-modality_2023] and patients diagnosed with schizophrenia[@Stein2020] (the weak prior account of schizophrenia[@Sterzer2018]). So far, attempts to reconcile these disparate set of findings have argued that priors may be either weak or strong depending on the stage of psychotic illness[@Sterzer2018, @Corlett2019] (weak priors in early stages, and strong priors in later stages) or the cognitive hierarchy[@Sterzer2018, @Corlett2019] (weak priors at the perceptual level, and strong priors at the cognitive level).
+During the internal mode, the average vectors of the classification images were displaced by $`r mean(abs(mean_vectors_ID[mean_vectors_ID$Mode == "internal",]$mean_orientation - 90), na.rm = TRUE)`$ ± $`r sd(abs(mean_vectors_ID[mean_vectors_ID$Mode == "internal",]$mean_orientation - 90), na.rm = TRUE)/sqrt(length(mean_vectors_ID[mean_vectors_ID$Mode == "internal",]$mean_orientation)/2)`$ degrees from vertical (Figure 3). The direction of the vectors depended on the predictive template, i.e., the orientation of the stimulus presented at the preceding trial. Interestingly, the displacement of the classification vectors from vertical was larger than the orientation of the high-contrast gratings (-10 and 10 degrees from vertical, Figure 1A), which were most effective at inducing FAs during the internal mode (Figure 2). Since the high-contrast gratings stood out from the other stimuli in terms of contrast and orientation (low contrast gratings were presented at orientation ranging from -3 to 3, Figure 1A-B), one may suspect that the perceived orientation of the high-contrast grating exceeded their veridical orientation. An alternative explanation may be that FAs experiences exaggerated the features of the inducer, just as hallucinations often portray exaggerated version of everyday stimuli (such as hallucinated speech that stands out in terms of tone, pitch, or extreme content[@toh_phenomenology_2020; @lopez-silva_phenomenology_2022; @parnas_phenomenology_2024]).
 
-The fact that FAs, and potentially psychotic symptoms such as hallucinations, are tied to recurrent alternation between external and internal modes of perception may provide an alternative explanation for the apparent discrepancy between strong and weak priors: Psychosis prone individuals and patients diagnosed with schizophrenia may share general propensity toward the external mode, which reduces the effects of priors on perception[@Stein2020, @eckert_cross-modality_2023] and drives erratic responses to ambiguous sensory information[@weilnhammer_n-methyl-d-aspartate_2024]. During the internal mode, psychosis prone individuals and patients diagnosed with schizophrenia may have stronger predictive templates that triggers and shapes the content of hallucinations. The combination of classification images and HMMs provides a novel analytical framework to test this hypothesis, may help to advance our theoretical understanding of schizophrenia, and can pave the way towards innovations in mental health that benefit people living with psychotic symptoms. 
+Our findings suggests a key role of serial dependence[@fischer_serial_2014; @kiyonaga_serial_2017;@pascucci_serial_2023; @cicchini_serial_2024] and predictive templates[@manassi_serial_2023] for how hallucinations emerge and persist over time. This view overlaps with the so-called strong prior account of schizophrenia[@Corlett2019], where psychotic symptoms, and in particular hallucinations, are thought to occur due to an exaggerated effect of prior predictions on perception[@Powers2017; @stuke_overly_2021; @kafadar_modeling_2020; @kafadar_conditioned_2022; @leptourgos_relating_2022; @schmack_striatal_2021]. At the same time, they seem at odds with the observation that prior are less effective in psychosis prone individuals[@eckert_cross-modality_2023] and patients diagnosed with schizophrenia[@Stein2020] (the weak prior account of schizophrenia[@Sterzer2018]). So far, attempts to reconcile these disparate set of findings have argued that priors may be either weak or strong depending on the stage of psychotic illness[@Sterzer2018, @Corlett2019] (weak priors in early stages, and strong priors in later stages) or the cognitive hierarchy[@Sterzer2018, @Corlett2019] (weak priors at the perceptual level, and strong priors at the cognitive level).
+
+The fact that FAs, and potentially psychotic symptoms such as hallucinations, are tied to recurrent alternation between external and internal modes of perception may provide an alternative explanation for the apparent discrepancy between strong and weak priors: Psychosis prone individuals and patients diagnosed with schizophrenia may share general propensity toward the external mode, which reduces the effects of priors on perception[@Stein2020, @eckert_cross-modality_2023] and drives erratic responses to ambiguous sensory information[@weilnhammer_n-methyl-d-aspartate_2024]. During the internal mode, psychosis prone individuals and patients diagnosed with schizophrenia may have stronger predictive templates that trigger and shape the content of hallucinations. The combination of classification images and HMMs provides a novel analytical framework to test this hypothesis, may help to advance our theoretical understanding of schizophrenia, and can pave the way towards innovations in mental health that benefit people living with psychotic symptoms. 
 
 \newpage
 
@@ -614,7 +623,11 @@ The participants viewed visual stimuli on a gamma-corrected CRT monitor (Sony Tr
 
 ### Stimuli and Procedure
 
-All stimuli were presented using MATLAB (MathWorks, R2017a) and the Psychophysics Toolbox. In 44% of the trials, we presented low-contrast near-to-vertical Gabor patches which were embedded in static white noise. In another 44% of the trials, we presented only static white noise. The remaining 12% of the trials featured a high-contrast Gabor patch (40% Michelson contrast) embedded in white noise. This high-contrast inducer was introduce to boost the phenomenon of serial dependency. The inducers were oriented 10 degrees clockwise or counterclockwise relative to vertical, and presented in intervals randomized between 4 and 10 trials. Stimuli were displayed for 500 ms, with a maximum white noise contrast of 60%. To reduce potential luminance aftereffects, the target was masked by low-pass filtered luminance contrast noise (100% contrast) for 500 ms, and the Gabor phase was randomized across trials. Visual stimuli measured 14 x 14 degrees of visual angle (d.v.a.), with Gabor patches confined to a Gaussian contrast envelope with a 3 d.v.a. standard deviation. The spatial frequency of the Gabor patches was 0.5 cycles per degree (cpd), with orientation randomized within ±3 degrees relative to vertical for low-contrast gratings. High-contrast gratings were presented at ±10 degrees. Participants were tasked to judge the presence or absence of the near-vertical target Gabor in the noisy image. We adjusted the signal contrast on a participant-by-participant basis to achieve a d’ of approximately 1.5 using data from preliminary experiments. Each session consisted of 100 trials, with inter-trial intervals randomized between 800-1200 ms. Participants completed 15-25 sessions in about 2 hours.
+All stimuli were presented using MATLAB (MathWorks, R2017a) and the Psychophysics Toolbox. In 44% of the trials, we presented low-contrast near-to-vertical Gabor patches which were embedded in static white noise. In another 44% of the trials, we presented only static white noise. The remaining 12% of the trials featured a high-contrast Gabor patch (40% Michelson contrast) embedded in white noise. This high-contrast inducer was introduce to boost the phenomenon of serial dependency. The inducers were oriented 10 degrees clockwise or counterclockwise relative to vertical, and presented in intervals randomized between 4 and 10 trials. Stimuli were displayed for 500 ms, with a maximum white noise contrast of 60%. To reduce potential luminance aftereffects, the signal was masked by low-pass filtered luminance contrast noise (100% contrast) for 500 ms, and the Gabor phase was randomized across trials. 
+
+Visual stimuli measured 14 x 14 degrees of visual angle (d.v.a.), with Gabor patches confined to a Gaussian contrast envelope with a 3 d.v.a. standard deviation. The spatial frequency of the Gabor patches was 0.5 cycles per degree (cpd), with orientation randomized within ±3 degrees relative to vertical for low-contrast gratings. High-contrast gratings were presented at ±10 degrees. Participants were tasked to judge the presence or absence of the near-vertical Gabor in the noisy image. We adjusted the signal contrast on a participant-by-participant basis to achieve a d’ of approximately 1.5 using data from preliminary experiments. Each session consisted of 100 trials, with inter-trial intervals randomized between 800-1200 ms. Participants completed 15-25 sessions in about 2 hours. 
+
+The raw data were published in a previous report on serial dependencies in perception[@murai_serial_2021]. The re-analysis presented here focuses on a different question (the perceptual and temporal quality of FAs as a proxy for hallucinations) and uses a different analytical approach (HMM-GLMs).
 
 ### Quantification and Statistical Analysis
 
@@ -682,7 +695,7 @@ p_main_accuracy_global <- ggplot() +
   color = "black",
   size = dot_size_sd
   ) + 
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
   x = "Contrast",
   y = "Alarm rate",
   alpha = "Previous contrast",
@@ -715,7 +728,7 @@ p_main_accuracy_mode <- ggplot() +
   color = "black",
   size = dot_size_sd
   ) + 
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
   x = "Contrast",
   y = "Alarm rate",
   color = "Previous contrast",
@@ -736,7 +749,7 @@ p_main_template_global <- ggplot(data = Group_Data_long[Group_Data_long$Mode == 
   geom_line(size = line_size_gd) + 
   geom_ribbon(size = line_size_gd/4,
   alpha = alpha_gd/4) +
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
   x = "Orientation",
   y = "Power (Alarm - Rejection)",
   subtitle = "E"
@@ -766,7 +779,7 @@ p_main_template_mode <- ggplot(data = Group_Data_long[Group_Data_long$Mode != "g
   geom_line(size = line_size_gd) + 
   geom_ribbon(size = line_size_gd/4,
   alpha = alpha_gd/4) +
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
   x = "Orientation",
   y = "Power (Alarm - Rejection)",
   subtitle = NULL
@@ -803,7 +816,7 @@ p_Mode_summary  <- ggplot() +
   width = dodge_width,
   size = line_size_gd,
   alpha = alpha_gd) + 
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
   x = "Mode",
   y = "Probability",
   subtitle = NULL
@@ -816,7 +829,7 @@ p_Mode_parameter <-
     aes(x = Type , y = values)) + geom_bar(position = "dodge", stat = "identity",
     width = 0.5
   ) +
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
     x = "Parameter",
     y = "Posterior",
     linetype = "",
@@ -847,7 +860,7 @@ p_Mode_example <-
     size = line_size_gd,
     alpha = alpha_gd
   ) +
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
     x = "Trial",
     y = "P(Mode = external)",
     linetype = "",
@@ -874,7 +887,7 @@ p_Mode_power_example_alarm <-
     size = line_size_gd/2,
     alpha = alpha_gd
   ) +
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
     x = "Orientation",
     y = "Power",
     linetype = "",
@@ -888,7 +901,7 @@ p_Mode_power_example_rejection <-
     size = line_size_gd/2,
     alpha = alpha_gd
   ) +
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
     x = "Orientation",
     y = "Power",
     linetype = "",
@@ -911,11 +924,15 @@ p_Mode_power_example_rejection <-
 
 **Figure 1.**
 
-**A. Paradigm.** Participants were instructed to report whether they perceived (close-to-) vertical gratings embedded in noise (left panel). At stimulus trials, gratings were presented either at low or at high contrast. At no-stimulus trials, no grating was presented (contrast = 0, middle panel). We reasoned that alarms would be more frequent when participant expect to experience a signal, and when the sensory noise is compatible with the predicted signal (($P(signal|noise) = P(signal) \times P(noise|signal)$, upper panel). We induced signal expectations $P(signal)$ by presenting stimuli in sequence (right panel). We hypothesized that such a sequence would induce false alarms (FAs) via the phenomenon of serial dependence. Serial dependencies cause perception to be biased toward preceding experiences, causing alarms to be more likely to be followed by alarm, and rejections more likely to be followed by rejection. Since serial dependencies are known to be stronger after confident experiences, we predicted that FAs would be more frequent after high-contrast stimuli. In the example shown on the right, our hypothesis therefore predicts that FAs would me most likely at the 2nd and 7th trial.
+**A. Paradigm.** Participants were instructed to report whether they perceived (close-to-) vertical gratings embedded in noise (left panel). At stimulus trials, gratings were presented either at low or at high contrast. At no-stimulus trials, no grating was presented (contrast = 0). We reasoned that alarms would be more frequent when participant expect to experience a signal, and when the sensory noise is compatible with the predicted signal (($P(signal|noise) = P(signal) \times P(noise|signal)$, upper panel). We induced signal expectations $P(signal)$ by presenting stimuli in sequence (right panel). We hypothesized that such a sequence would induce false alarms (FAs) via the phenomenon of serial dependence. Serial dependencies cause perception to be biased toward preceding experiences, causing alarms to be more likely to be followed by alarms, and rejections more likely to be followed by rejections. Since serial dependencies are known to be stronger after confident experiences, we predicted that FAs would be more frequent after high-contrast stimuli. In the example shown on the right, our hypothesis therefore predicts that FAs would me most likely at the 2nd and 7th trial.
 
-**B. Predictive perceptual templates.** To compute the compatibility of the white noise with the expected signal ($P(noise|signal)$), we subtracted the power-by-orientation distribution of the random white noise images at rejection trials (blue) from the power-by-orientation distribution of the random noise images at alarm trials (red). The right panel the power power-by-orientation distributions of 20 example stimuli that occurred at alarm and rejection trials, respectively. 
+**B. Predictive perceptual templates.** To compute the compatibility of the white noise with the expected signal ($P(noise|signal)$), we subtracted the power-by-orientation distribution of the random white noise images at rejection trials (blue) from the power-by-orientation distribution of the random noise images at alarm trials (red). The right panel shows the power-by-orientation distributions of 20 example stimuli that occurred at alarm and rejection trials, respectively. 
 
-**C. External and internal modes in perception.** Perception is known to slowly alternate between two opposing modes (left panel): During external mode, perception is dominated by incoming stimuli, with weak serial dependencies between subsequent trials (grey arrows). By contrast, during internal mode, perception is shaped by the perceptual expectations induced by preceding experiences (strong serial dependencies, black arrows). The examples depicted within the circles illustrate the effect of external and internal mode on perception: In the external mode, perception dissociates from predictions that stem from serial dependencies, such that rejections (blue) often occur even after high-contrast stimuli. In the internal mode, perception is strongly biased toward previous experiences, causing alarms (red) to be more frequent after high-contrast stimuli. Between-mode alternations can by discovered by Hidden Markov Models (HMM). HMMs describe alternations between two independent General Linear Models (GLMs), each of which predicts perceptual experiences $y_t$ via weights assigned to the stimulus $\beta_S \times s_t$ at the current trial, and the experience made at the preceding trial $\beta_H \times y_{t-1}$. In this experiment, the GLM-HMM discovered an external mode ($`r mean(100-Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE)`$ ±  $`r (sd(100-Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE))/sqrt(length(Summary_Data_Mode_Prevalence_ID$P_int))`$% percent of trials), during which $\beta_S$ is high, while $\beta_H$ is low (middle and right panels), and an internal mode ($`r mean(Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE)`$ ±  $`r (sd(Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE))/sqrt(length(Summary_Data_Mode_Prevalence_ID$P_int))`$% percent of trials), during which $\beta_S$ is low, while the weight assigned to the history of previous $\beta_H$ is high.
+**C. External and internal modes in perception.** Perception is known to slowly alternate between two opposing modes (left panel): During the external mode, perception is dominated by incoming stimuli, with weak serial dependencies between subsequent trials (grey arrows). By contrast, during the internal mode, perception is strongly biased by preceding experiences (strong serial dependencies, black arrows). The examples depicted within the circles illustrate the effect of external and internal mode on perception: In the external mode, perception dissociates from predictions that stem from serial dependencies, such that alarms (red) and rejections (blue) are equally likely to occur after high-contrast stimuli. In the internal mode, perception is strongly biased toward previous experiences, causing alarms (red) to be more frequent after high-contrast stimuli. Between-mode alternations can by discovered by Hidden Markov Models (HMM). HMMs describe alternations between two independent General Linear Models (GLMs), each of which predicts perceptual experiences $y_t$ via weights assigned to the stimulus $\beta_S \times s_t$ at the current trial, and the experience made at the preceding trial $\beta_H \times y_{t-1}$. In this experiment, the GLM-HMM discovered an external mode ($`r mean(100-Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE)`$ ±  $`r (sd(100-Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE))/sqrt(length(Summary_Data_Mode_Prevalence_ID$P_int))`$% percent of trials), during which $\beta_S$ is high while $\beta_H$ is low (middle and right panels), and an internal mode ($`r mean(Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE)`$ ±  $`r (sd(Summary_Data_Mode_Prevalence_ID$P_int, na.rm = TRUE))/sqrt(length(Summary_Data_Mode_Prevalence_ID$P_int))`$% percent of trials), during which $\beta_S$ is low while $\beta_H$ is high.
+
+\newpage 
+
+## Figure 2
 
 ```{r Figure_2}
 p_main_accuracy_global <- ggplot() + 
@@ -945,7 +962,7 @@ p_main_accuracy_global <- ggplot() +
   color = "black",
   size = dot_size_sd
   ) + 
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
   x = "Contrast",
   y = "Alarm rate",
   alpha = "Previous contrast",
@@ -980,7 +997,7 @@ p_main_accuracy_mode <- ggplot() +
   color = "black",
   size = dot_size_sd
   ) + 
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
   x = "Contrast",
   y = "Alarm rate",
   color = "Previous contrast",
@@ -1001,7 +1018,7 @@ p_main_template_global <- ggplot(data = Group_Data_long[Group_Data_long$Mode == 
   geom_line(size = line_size_gd) + 
   geom_ribbon(size = line_size_gd/4,
   alpha = alpha_gd/4) +
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
   x = "Orientation",
   y = "Power (Alarm - Rejection)",
   subtitle = "E"
@@ -1031,7 +1048,7 @@ p_main_template_mode <- ggplot(data = Group_Data_long[Group_Data_long$Mode != "g
   geom_line(size = line_size_gd) + 
   geom_ribbon(size = line_size_gd/4,
   alpha = alpha_gd/4) +
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
   x = "Orientation",
   y = "Power (Alarm - Rejection)",
   subtitle = NULL
@@ -1060,9 +1077,13 @@ grid.arrange(
 )
 ```
 
-**Figure 2. The effect of serial dependencies on alarms and rejections depend on mode.** Globally, alarm rate correlated positively with the contrast of stimuli presented at the preceding trial ($`r STAT.alarm_resp_contr$coefficients[4,1]`$ ± $`r STAT.alarm_resp_contr$coefficients[4,2]`$, z = $`r STAT.alarm_resp_contr$coefficients[4,3]`$, p = $`r STAT.alarm_resp_contr$coefficients[4,4]`$). This suggests that serial dependencies contribute to FAs. When separating our data in episodes of external and internal modes, we found positive serial dependencies only during the internal mode ($`r STAT.alarm_resp_contr_internal$coefficients[4,1]`$ ± $`r STAT.alarm_resp_contr_internal$coefficients[4,2]`$, z = $`r STAT.alarm_resp_contr_internal$coefficients[4,3]`$, p = $`r STAT.alarm_resp_contr_internal$coefficients[4,4]`$). During the external mode, by contrast, we observed a negative correlation between alarm rate and preceding stimulus contrast ($`r STAT.alarm_resp_contr_external$coefficients[4,1]`$ ± $`r STAT.alarm_resp_contr_external$coefficients[4,2]`$, z = $`r STAT.alarm_resp_contr_external$coefficients[4,3]`$, p = $`r STAT.alarm_resp_contr_external$coefficients[4,4]`$).
+**Figure 2. The effect of serial dependencies on alarms and rejections depend on mode.** The global alarm rate correlated positively with the contrast of stimuli presented at the preceding trial ($`r STAT.alarm_resp_contr$coefficients[4,1]`$ ± $`r STAT.alarm_resp_contr$coefficients[4,2]`$, z = $`r STAT.alarm_resp_contr$coefficients[4,3]`$, p = $`r STAT.alarm_resp_contr$coefficients[4,4]`$). This suggests that serial dependencies contribute to FAs. When separating our data in episodes of external and internal modes, we found positive serial dependencies only during the internal mode ($`r STAT.alarm_resp_contr_internal$coefficients[4,1]`$ ± $`r STAT.alarm_resp_contr_internal$coefficients[4,2]`$, z = $`r STAT.alarm_resp_contr_internal$coefficients[4,3]`$, p = $`r STAT.alarm_resp_contr_internal$coefficients[4,4]`$). During the external mode, by contrast, we observed a negative correlation between alarm rate and preceding stimulus contrast ($`r STAT.alarm_resp_contr_external$coefficients[4,1]`$ ± $`r STAT.alarm_resp_contr_external$coefficients[4,2]`$, z = $`r STAT.alarm_resp_contr_external$coefficients[4,3]`$, p = $`r STAT.alarm_resp_contr_external$coefficients[4,4]`$).
 
-```{r Figure_3}
+\newpage
+
+## Figure 3
+
+```{r Figure_3, fig.height=6}
 
 p_main_template_global <- ggplot(data = Group_Data_long[Group_Data_long$Mode == "global",],
   aes(
@@ -1076,9 +1097,11 @@ p_main_template_global <- ggplot(data = Group_Data_long[Group_Data_long$Mode == 
   geom_line(size = line_size_gd) + 
   geom_ribbon(size = line_size_gd/4,
   alpha = alpha_gd/4) +
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
   x = "Orientation",
   y = "Power (Alarm - Rejection)",
+  fill = "Previous direction",
+  color = "Previous direction",
   subtitle = NULL
   ) +
   geom_vline(
@@ -1106,7 +1129,7 @@ p_main_template_mode <- ggplot(data = Group_Data_long[Group_Data_long$Mode != "g
   geom_line(size = line_size_gd) + 
   geom_ribbon(size = line_size_gd/4,
   alpha = alpha_gd/4) +
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
   x = "Orientation",
   y = "Power (Alarm - Rejection)",
   subtitle = NULL,
@@ -1126,26 +1149,26 @@ p_main_template_mode <- ggplot(data = Group_Data_long[Group_Data_long$Mode != "g
   scale_color_brewer(palette = "Dark2", direction = -1) + scale_fill_brewer(palette = "Dark2", direction = -1) + theme(legend.position = "none") + facet_wrap(~Mode)
 
 
-lay <- rbind(c(1,2))
+lay <- rbind(c(1),c(2))
 grid.arrange(
   p_main_template_global,
   p_main_template_mode,
   layout_matrix = lay,
-  heights = c(1),
-  widths = c(1,2)
+  heights = c(1.5,1),
+  widths = c(1)
 )
 ```
 
-  **Figure 3. The effect of predictive templates on alarms and rejections depends on mode.** Globally, the classification images computed for alarms (power-by-orientation distribution at alarm trials relative to the power-by-orientation distribution at rejection trials) revealed a peak around 90°. This corresponds the average orientation of the signal ($`r STAT.mode_FA$coefficients[2,1]`$ ± $`r STAT.mode_FA$coefficients[2,2]`$, T($`r STAT.template_alarm$coefficients[2,3]`$) = $`r STAT.template_alarm$coefficients[2,4]`$, p = $`r STAT.template_alarm$coefficients[2,5]`$). 
-  During the internal mode, we found a shift of the close-to-vertical noise power peak toward the orientation of the preceding stimulus ($`r STAT.vector_internal$coefficients[2,1]`$ ± $`r STAT.vector_internal$coefficients[2,2]`$, T($`r STAT.vector_internal$coefficients[2,3]`$) = $`r STAT.vector_internal$coefficients[2,4]`$, p = $`r STAT.vector_internal$coefficients[2,5]`$; clockwise tilt [CW] in green, counter-clockwise tilt [CCW] in orange). This was not observed during the external mode ($`r STAT.vector_external$coefficients[2,1]`$ ± $`r STAT.vector_external$coefficients[2,2]`$, T($`r STAT.vector_external$coefficients[2,3]`$) = $`r STAT.vector_external$coefficients[2,4]`$, p = $`r STAT.vector_external$coefficients[2,5]`$).
+  **Figure 3. The effect of predictive templates on alarms and rejections depends on mode.** Globally, the classification images computed for alarms (power-by-orientation distribution at alarm trials relative to the power-by-orientation distribution at rejection trials) revealed a peak around 90°. This corresponds to the average orientation of the signal ($`r STAT.mode_FA$coefficients[2,1]`$ ± $`r STAT.mode_FA$coefficients[2,2]`$, T($`r STAT.template_alarm$coefficients[2,3]`$) = $`r STAT.template_alarm$coefficients[2,4]`$, p = $`r STAT.template_alarm$coefficients[2,5]`$). 
+  During the internal mode, we found a shift of the close-to-vertical noise power peak toward the orientation of the preceding stimulus ($`r STAT.vector_internal$coefficients[2,1]`$ ± $`r STAT.vector_internal$coefficients[2,2]`$, T($`r STAT.vector_internal$coefficients[2,3]`$) = $`r STAT.vector_internal$coefficients[2,4]`$, p = $`r STAT.vector_internal$coefficients[2,5]`$; clockwise tilt [CW] in green, counter-clockwise tilt [CCW] in orange; dots indicate position of the average vector). This shift was not observed during the external mode ($`r STAT.vector_external$coefficients[2,1]`$ ± $`r STAT.vector_external$coefficients[2,2]`$, T($`r STAT.vector_external$coefficients[2,3]`$) = $`r STAT.vector_external$coefficients[2,4]`$, p = $`r STAT.vector_external$coefficients[2,5]`$). 
 
 \newpage
 
 # Supplementary Information
 
-## Supplemental Figure SX1
+## Supplemental Figure S1
 
-```{r Supplemental_Figure_SX1}
+```{r Supplemental_Figure_S1}
 p_BIC <- ggplot() +
   geom_point(data = df_combined,
   aes(
@@ -1155,32 +1178,23 @@ p_BIC <- ggplot() +
   width = dodge_width,
   position = position_jitterdodge(dodge.width = dodge_width*2, jitter.width = dodge_width/2,
   jitter.height = 0),
-  size = line_size_gd*2,
+  size = line_size_gd,
   alpha = alpha_sd) +
-  geom_errorbar(data = Group_BIC,
-  aes(
-  x = as.factor(num_states),
-  y = mean,
-  ymax = mean + error,
-  ymin = mean - error,
-  color = type),
-  width = dodge_width,
-  position = position_dodge(width = dodge_width*2),
-  size = line_size_gd) +
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
   x = "Number of States",
   y = "BIC"
   ) + scale_color_brewer(palette = "Set1", direction = 1) + scale_fill_brewer(palette = "Set2", direction = 1) + theme(legend.position = "top") +
   theme(panel.spacing=unit(1,"lines"))
 p_BIC
 ```
-**Supplemental Figure SX1.** We used Bayesian model comparison to evaluate whether the two-state GLM-HMM (number of parameters: 8) provided a more parsimonious explanation of our data in comparison to the one-state control model (number of parameters: 2). To compare the two models, we computed the difference in $\text{BIC} = \log(N) \cdot k - 2 \cdot \log(L)$. Relative to the one-state GLM, the two-state GLM-HMM yielded a reduction in BI by  $\delta_{BIC}$ =  $`r Group_BIC[Group_BIC$num_states == 2 & Group_BIC$type == "original",]$mean - Group_BIC[Group_BIC$num_states == 1 & Group_BIC$type == "original",]$mean`$ (red).
-We did not observe this reduction when we randomly shuffled the trials for a total of 100 iterations, and computed BICs for these randomly permuted data (average $\delta_{BIC}$ =  $`r Group_BIC[Group_BIC$num_states == 2 & Group_BIC$type == "permuted",]$mean - Group_BIC[Group_BIC$num_states == 1 & Group_BIC$type == "permuted",]$mean`$; blue).
+**Supplemental Figure S1.** We used Bayesian model comparison to evaluate whether the two-state HMM-GLM (number of parameters: 8) provided a more parsimonious explanation of our data in comparison to the one-state control model (number of parameters: 2). To compare the two models, we computed the difference in $\text{BIC} = \log(N) \times k - 2 \times \log(L)$. Relative to the one-state GLM, the two-state HMM-GLM yielded a reduction in BIC by $\delta_{BIC}$ =  $`r Group_BIC[Group_BIC$num_states == 2 & Group_BIC$type == "original",]$mean - Group_BIC[Group_BIC$num_states == 1 & Group_BIC$type == "original",]$mean`$ (red).
+We did not observe this reduction when we randomly shuffled the trials for a total of 100 iterations, and computed BICs for these randomly permuted data (average $\delta_{BIC}$ =  $`r Group_BIC[Group_BIC$num_states == 2 & Group_BIC$type == "permuted",]$mean - Group_BIC[Group_BIC$num_states == 1 & Group_BIC$type == "permuted",]$mean`$; blue). As expected, shuffling did not have an effect on BIC in the one-state control GLM.
 
 \newpage
-## Supplemental Figure SX2
 
-```{r Supplemental_Figure_SX2}
+## Supplemental Figure S2
+
+```{r Supplemental_Figure_S2}
 
 Summary_Data_Mode_versus_contrast <-
     ddply(
@@ -1224,7 +1238,7 @@ p_Mode_versus_contrast <- ggplot() +
     color = "black",
     size = dot_size_sd
   ) + 
-  theme_classic(base_size = 6) + labs(
+  theme_classic(base_size = 10) + labs(
     x = "Contrast",
     y = "Probability of external mode",
     alpha = "Previous contrast",
@@ -1259,13 +1273,12 @@ mean_interval <- mean(intervals, na.rm = TRUE)
 sem_interval <- sd(intervals) / sqrt(length(intervals))
 ```
 
-**Supplemental Figure SX2.** As an alternative explanation for the slow and spontaneous alternations between external and internal modes, one may assume a response heuristic that uses the external sensory data when it is reliable (i.e., at high-contrast trials), and applies internal predictions when the external sensory data is not reliable (i.e., no-stimulus and low-contrast trials). The latter explanation would entail that the trial-wise probability of external depends exclusively on contrast. 
-We found that the probability of the external mode was higher when the contrast at the current trial was high (
-$`r STAT.external_mode_contr$coefficients[2,1]`$ ± $`r STAT.external_mode_contr$coefficients[2,2]`$, z = $`r STAT.external_mode_contr$coefficients[2,3]`$, p = $`r STAT.external_mode_contr$coefficients[2,4]`$), 
-and when contrast at the preceding trial was high ($`r STAT.external_mode_contr$coefficients[4,1]`$ ± $`r STAT.external_mode_contr$coefficients[4,2]`$, z = $`r STAT.external_mode_contr$coefficients[4,3]`$, p = $`r STAT.external_mode_contr$coefficients[4,4]`$). 
-This suggests that stimuli with high signal-to-noise ratio make switches to the external mode more likely. However, the overall change in the probability of external mode, which ranged form a minimum of $`r min(Group_Data_Mode_versus_contrast$mean)`$% to a maximum of $`r min(Group_Data_Mode_versus_contrast$mean)`$%, was small. Moreover, te average interval between mode switches ($`r mean(average_intervals_df$interval, na.rm = TRUE)`$ ± $`r (sd(average_intervals_df$interval, na.rm = TRUE))/sqrt(length(average_intervals_df$interval))`$trials) was approximately eight times longer than the average interval between high-contrast stimuli ($`r mean_interval`$ ± $`r sem_interval`$ trials). In sum, our analyses therefore reveal a potential role of high signal-to-noise ratio for mode alternations, but are not compatbile with the view that external and internal modes reflect response strategies applied exclusively to stimuli at high and low signal-to-noise ratio, respectively. 
+**Supplemental Figure S2.** As an alternative explanation for external and internal modes, one may assume a response heuristic that uses the external sensory data when it is reliable (i.e., at high-contrast trials), and applies internal predictions when the external sensory data is not reliable (i.e., no-stimulus and low-contrast trials). The latter explanation would entail that the trial-wise probability of external mode depends exclusively on contrast. 
+We found that the probability of the external mode was higher when the contrast at the current trial was high ($`r STAT.external_mode_contr$coefficients[2,1]`$ ± $`r STAT.external_mode_contr$coefficients[2,2]`$, z = $`r STAT.external_mode_contr$coefficients[2,3]`$, p = $`r STAT.external_mode_contr$coefficients[2,4]`$). Likewise, the external mode was more likely when the contrast of the stimulus presented at the preceding trial was high ($`r STAT.external_mode_contr$coefficients[4,1]`$ ± $`r STAT.external_mode_contr$coefficients[4,2]`$, z = $`r STAT.external_mode_contr$coefficients[4,3]`$, p = $`r STAT.external_mode_contr$coefficients[4,4]`$). 
+This may suggest that stimuli with high signal-to-noise ratio make switches to the external mode more likely. However, the overall change in the probability of external mode was small, ranging form a minimum of $`r min(Group_Data_Mode_versus_contrast$mean)`$% to a maximum of $`r max(Group_Data_Mode_versus_contrast$mean)`$%. Moreover, the average interval between mode switches ($`r mean(average_intervals_df$interval, na.rm = TRUE)`$ ± $`r (sd(average_intervals_df$interval, na.rm = TRUE))/sqrt(length(average_intervals_df$interval))`$ trials) was almost eight times longer than the average interval between high-contrast stimuli ($`r mean_interval`$ ± $`r sem_interval`$ trials). Our analyses therefore reveal a potential role of high signal-to-noise ratio for mode alternations. They are, however, not compatible with the view that external and internal modes reflect response strategies applied exclusively to stimuli at high and low signal-to-noise ratio, respectively.
 
 \newpage
+
 ## Supplemental Table S1
 
 | RESOURCE                                   | SOURCE                                            | IDENTIFIER                |
