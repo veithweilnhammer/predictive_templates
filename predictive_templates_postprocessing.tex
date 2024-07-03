@@ -122,7 +122,10 @@ Veith Weilnhammer\(^{1}\), Yuki Murai\(^{2}\), David Whitney\(^{1}\)\\
 
 \(^{1}\) Helen Wills Neuroscience Institute, University of California
 Berkeley, USA\\
-\(^{2}\) Center for Information and Neural Networks, Osaka, Japan\\
+\(^{2}\) Center for Information and Neural Networks, National Institute
+of Information and Communications Technology, Osaka, Japan\\
+\(^{3}\) Graduate School of Frontier Biosciences, Osaka University,
+Japan\\
 
 \hfill\break
 
@@ -239,15 +242,14 @@ the phenomenon of perceptual serial dependence\textsuperscript{22--26}.
 
 Predictive templates may improve the interpretation of noisy but
 predictable sensory inputs\textsuperscript{21,27}. When overly strong,
-however, predictive templates lose their adaptive function and may cause
-people to experience spurious signals in noise (\(P(signal|noise)\)).
-With respect to the study of hallucinations, the critical question is
-whether FAs are driven solely by signal expectations (\(P(signal)\),
-prior), in which case they may just be behavioral responses without any
-perceptual quality, or if they also depend on the compatibility of the
-noise with the expected signal (\(P(noise|signal)\), likelihood). The
-latter case would indicate that FAs are accompanied by perceptual
-experiences with a specific content.
+however, predictive templates may cause people to experience spurious
+signals in noise (\(P(signal|noise)\)). With respect to the study of
+hallucinations, the critical question is whether FAs are driven solely
+by signal expectations (\(P(signal)\), prior), in which case they may
+just be behavioral responses without any perceptual quality, or if they
+also depend on the compatibility of the noise with the expected signal
+(\(P(noise|signal)\), likelihood). The latter case would indicate that
+FAs are accompanied by perceptual experiences with a specific content.
 
 To test the contribution of prior and likelihood to FAs, we analyzed
 data from 22 participants who judged whether close-to vertical gratings
@@ -281,8 +283,8 @@ power-by-orientation distribution in the white noise stimuli used in our
 experiment. This was clearly not the case: FAs occurred more frequently
 at noise stimuli that matched a feature of the signal (high power at
 close-to-vertical orientations; Figure 3). Critically, observers learned
-the features of the average signal from the sequence of experiences they
-made throughout the experiment.
+the features of the average signal from the experiences they made
+throughout the experiment.
 
 Our findings therefore support criterion 1: at the time of FAs,
 observers perceived specific contents - in this case, gratings with a
@@ -326,12 +328,13 @@ Participants spent \(28.7\) ± \(3.5\)\% of their time in internal mode,
 with alternation between modes occurring in intervals of \(59.1\) ±
 \(8.8\) trials, corresponding to \(118.21\) ± \(17.6\) sec.~External and
 internal mode fluctuated spontaneously, and were only marginally
-modulated by contrast of the signal grating (Supplemental Figure S2).
-The GLMs that defined the external and internal mode were independent
-from the orientation of the signal, the contrast of the signal at the
-preceding trial, and the power-by-orientation distribution of the noise.
-Any between-mode difference in the classification images was therefore
-indicative of dynamic changes in the underlying predictive templates.
+modulated by the contrast of the signal grating (Supplemental Figure
+S2). The GLMs that defined the external and internal mode were
+independent from the orientation of the signal, the contrast of the
+signal at the preceding trial, and the power-by-orientation distribution
+of the noise. Any between-mode difference in the classification images
+was therefore indicative of dynamic changes in the underlying predictive
+templates.
 
 We found that the internal mode increased the rate of FAs relative to
 external mode (\(0.1\) ± \(0.02\), T(\(109\)) = \(4.61\), p =
@@ -424,8 +427,8 @@ over time. This view overlaps with the so-called strong prior account of
 schizophrenia\textsuperscript{9}, where psychotic symptoms, and in
 particular hallucinations, are thought to occur due to an exaggerated
 effect of prior predictions on perception\textsuperscript{1--5,7}. At
-the same time, they seem at odds with the observation that prior are
-less effective in psychosis prone individuals\textsuperscript{29} and
+the same time, they seem at odds with the observation that priors are
+less influential in psychosis prone individuals\textsuperscript{29} and
 patients diagnosed with schizophrenia\textsuperscript{30} (the weak
 prior account of schizophrenia\textsuperscript{8}). So far, attempts to
 reconcile these disparate set of findings have argued that priors may be
@@ -436,7 +439,7 @@ priors in later stages) or the cognitive hierarchy\textsuperscript{9}
 level).
 
 The fact that FAs, and potentially psychotic symptoms such as
-hallucinations, are tied to recurrent alternation between external and
+hallucinations, are tied to recurrent alternations between external and
 internal modes of perception may provide an alternative explanation for
 the apparent discrepancy between strong and weak priors: Psychosis prone
 individuals and patients diagnosed with schizophrenia may share general
@@ -473,11 +476,11 @@ This study did not generate new unique reagents.
 availability}\label{data-and-code-availability}}
 
 All custom code and behavioral data are available on
-\url{https://github.com/veithweilnhammer/Modes}. This manuscript was
-created using the \emph{R Markdown} framework, which integrates all
-data-related computations and the formatted text within one document.
-With this, we wish to make our approach fully transparent and
-reproducible for reviewers and future readers.
+\url{https://github.com/veithweilnhammer/predictive_templates}. This
+manuscript was created using the \emph{R Markdown} framework, which
+integrates all data-related computations and the formatted text within
+one document. With this, we wish to make our approach fully transparent
+and reproducible for reviewers and future readers.
 
 \hypertarget{experimental-model-and-subject-details}{%
 \subsection{Experimental model and subject
@@ -606,6 +609,21 @@ when \(P(z_t = external) = 1 - P(z_t = internal) > 0.5\).
 
 \newpage
 
+\hypertarget{declaration-of-interest}{%
+\section{Declaration of Interest}\label{declaration-of-interest}}
+
+The authors declare no conflict of interest.
+
+\hypertarget{acknowledgements}{%
+\section{Acknowledgements}\label{acknowledgements}}
+
+This work was supported by the Leopoldina German National Academy of
+Sciences (VW, LDPS2022-16), the Grants-in-Aid for Scientific Research
+(YM; KAKENHI-23K22375, 23KK0046), and the National Institute of Health
+(DW, NIH R01CA236793).
+
+\newpage
+
 \hypertarget{figures}{%
 \section{Figures}\label{figures}}
 
@@ -704,10 +722,12 @@ of the signal (\(0.1\) ± \(0.02\), T(\(\ensuremath{1.37\times 10^{4}}\))
 internal mode, we found a shift of the close-to-vertical noise power
 peak toward the orientation of the preceding stimulus (\(19.87\) ±
 \(6.73\), T(\(20.28\)) = \(2.95\), p =
-\(\ensuremath{7.82\times 10^{-3}}\); clockwise tilt {[}CW{]} in green,
-counter-clockwise tilt {[}CCW{]} in orange; dots indicate position of
-the average vector). This shift was not observed during the external
-mode (\(-3.67\) ± \(6.27\), T(\(20.15\)) = \(-0.59\), p = \(0.56\)).
+\(\ensuremath{7.82\times 10^{-3}}\); classification images after
+clockwise stimuli {[}CW{]} in green, counter-clockwise {[}CCW{]} in
+orange; dots indicate position of the average vector; orientations
+greater than 90 degrees indicate CW displacement). This shift was not
+observed during the external mode (\(-3.67\) ± \(6.27\), T(\(20.15\)) =
+\(-0.59\), p = \(0.56\)).
 
 \newpage
 
